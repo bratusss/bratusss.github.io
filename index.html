@@ -3,1804 +3,1285 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Pakalpojumi — Profesionāla 3D Printēšana & Modelēšana</title>
-<meta name="description" content="Profesionāla 3D printēšana un modelēšana ar Bambu Lab printeriem. Ātra, precīza un kvalitatīva 3D druka Latvijā.">
+<title>3D Pakalpojumi — Printēšana & Modelēšana</title>
+<meta name="description" content="Profesionāla 3D printēšana un modelēšana Latvijā. Bambu Lab tehnoloģija, ātra izpilde.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-/* ============================================
-   CSS VARIABLES & RESET
-   ============================================ */
-:root {
-  --black:       #050505;
-  --charcoal:    #0d0d0d;
-  --surface:     #111111;
-  --surface-2:   #1a1a1a;
-  --border:      rgba(255,255,255,0.07);
-  --border-hot:  rgba(230,126,34,0.35);
-  --orange:      #e67e22;
-  --orange-dim:  rgba(230,126,34,0.12);
-  --orange-glow: rgba(230,126,34,0.25);
-  --white:       #ffffff;
-  --off-white:   #e8e8e8;
-  --muted:       #888888;
-  --muted-2:     #555555;
 
-  --font-display: 'Bebas Neue', sans-serif;
-  --font-body:    'DM Sans', sans-serif;
-  --font-mono:    'JetBrains Mono', monospace;
-
-  --max-w: 1320px;
-  --radius: 6px;
-  --transition: 0.35s cubic-bezier(0.23,1,0.32,1);
-}
-
+/* ─── RESET ─── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html { scroll-behavior: smooth; font-size: 16px; }
-
+html { scroll-behavior: smooth; }
 body {
-  background: var(--black);
-  color: var(--white);
-  font-family: var(--font-body);
+  font-family: 'Inter', sans-serif;
+  background: #08090c;
+  color: #fff;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-  cursor: default;
 }
-
 a { text-decoration: none; color: inherit; }
-img { display: block; max-width: 100%; }
-ul { list-style: none; }
+img { display: block; }
 
-/* ============================================
-   NOISE OVERLAY
-   ============================================ */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-  opacity: 0.4;
-  pointer-events: none;
-  z-index: 9999;
+/* ─── DESIGN TOKENS ─── */
+:root {
+  --orange: #f97316;
+  --cyan: #22d3ee;
+  --violet: #a855f7;
+  --white: #ffffff;
+  --off: #a0a8b8;
+  --surface: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.08);
+  --max: 1160px;
+  --ease: cubic-bezier(.22,1,.36,1);
 }
 
-/* ============================================
-   TYPOGRAPHY UTILITY
-   ============================================ */
-.label {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--orange);
-}
-
-.section-title {
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 7vw, 6rem);
-  line-height: 0.92;
-  letter-spacing: 0.02em;
-  color: var(--white);
-}
-
-.section-title span { color: var(--orange); }
-
-/* ============================================
-   TOPBAR
-   ============================================ */
-.topbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 1000;
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 5%;
-  background: rgba(5,5,5,0.85);
-  backdrop-filter: blur(16px) saturate(150%);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 clamp(20px, 5vw, 60px);
+  background: rgba(8,9,12,0.7);
+  backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
-  animation: slideDown 0.6s var(--transition) both;
 }
-
-@keyframes slideDown {
-  from { transform: translateY(-100%); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
 }
-
-.topbar-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.nav-logo img { height: 30px; width: auto; }
+.nav-logo-text {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
 }
-
-.topbar-logo img {
-  height: 36px;
-  width: auto;
+.nav-logo-text span { color: var(--orange); }
+.nav-links {
+  display: flex; align-items: center; gap: 32px;
+  list-style: none;
 }
-
-.topbar-domain {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--muted);
-  letter-spacing: 0.12em;
-  border-left: 1px solid var(--border);
-  padding-left: 12px;
+.nav-links a {
+  font-size: 0.88rem;
+  color: var(--off);
+  transition: color .2s;
+  letter-spacing: 0.01em;
 }
-
-.topbar-cta {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+.nav-links a:hover { color: #fff; }
+.nav-cta {
+  display: flex; align-items: center; gap: 12px;
 }
-
-.topbar-link {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  transition: color var(--transition);
+.btn-outline-sm {
+  padding: 8px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.84rem;
+  color: var(--off);
+  transition: all .2s;
+  font-family: 'Inter', sans-serif;
 }
-.topbar-link:hover { color: var(--white); }
-
-.btn-nav {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+.btn-outline-sm:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+.btn-primary-sm {
   padding: 9px 22px;
-  border: 1px solid var(--orange);
-  color: var(--orange);
-  border-radius: var(--radius);
-  transition: all var(--transition);
-  background: transparent;
-  cursor: pointer;
-}
-.btn-nav:hover {
   background: var(--orange);
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 600;
   color: #000;
-  box-shadow: 0 0 24px var(--orange-glow);
+  transition: all .2s;
+  white-space: nowrap;
 }
+.btn-primary-sm:hover { background: #ea6a00; transform: translateY(-1px); }
 
-/* ============================================
-   HERO
-   ============================================ */
+/* ─── HERO ─── */
 .hero {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center;
+  padding: 120px clamp(20px,5vw,60px) 80px;
   position: relative;
   overflow: hidden;
-  padding: 100px 5% 80px;
 }
 
-/* Animated grid background */
-.hero-grid {
+/* Background glows like in the reference image */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px; height: 600px;
+  background:
+    radial-gradient(ellipse 60% 50% at 30% 40%, rgba(168,85,247,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 70% 40%, rgba(34,211,238,0.16) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 50% 60%, rgba(249,115,22,0.10) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(230,126,34,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(230,126,34,0.04) 1px, transparent 1px);
-  background-size: 60px 60px;
-  animation: gridDrift 20s linear infinite;
-  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent);
-}
-
-@keyframes gridDrift {
-  from { background-position: 0 0; }
-  to   { background-position: 60px 60px; }
-}
-
-/* Radial glow */
-.hero-glow {
-  position: absolute;
-  top: -20%;
-  right: -10%;
-  width: 700px;
-  height: 700px;
-  background: radial-gradient(circle, rgba(230,126,34,0.08) 0%, transparent 65%);
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(8,9,12,0) 0%, #08090c 70%);
   pointer-events: none;
 }
 
-.hero-glow-2 {
-  position: absolute;
-  bottom: -20%;
-  left: -10%;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(230,126,34,0.05) 0%, transparent 65%);
-  pointer-events: none;
-}
-
-.hero-inner {
-  position: relative;
-  z-index: 2;
-  max-width: var(--max-w);
-  margin: 0 auto;
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  align-items: center;
-}
-
-.hero-text { }
+.hero-inner { position: relative; z-index: 1; max-width: 820px; }
 
 .hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--orange-dim);
-  border: 1px solid var(--border-hot);
-  border-radius: 2px;
-  padding: 6px 14px;
-  margin-bottom: 32px;
-  animation: fadeUp 0.7s var(--transition) 0.2s both;
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 6px 16px 6px 8px;
+  margin-bottom: 36px;
+  font-size: 0.82rem;
+  color: var(--off);
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(8px);
+  animation: fadeUp .6s var(--ease) .1s both;
 }
-
-.hero-badge .dot {
-  width: 6px; height: 6px;
+.hero-badge-dot {
+  width: 20px; height: 20px;
+  background: rgba(249,115,22,0.15);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.hero-badge-dot::after {
+  content: '';
+  width: 7px; height: 7px;
   background: var(--orange);
   border-radius: 50%;
-  animation: pulse 2s ease infinite;
+  box-shadow: 0 0 8px rgba(249,115,22,0.8);
+  animation: blink 2s ease infinite;
+}
+@keyframes blink {
+  0%,100% { opacity: 1; } 50% { opacity: 0.4; }
 }
 
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(230,126,34,0.6); }
-  50%       { box-shadow: 0 0 0 6px rgba(230,126,34,0); }
-}
-
-.hero-heading {
-  font-family: var(--font-display);
-  font-size: clamp(3.8rem, 8vw, 8rem);
-  line-height: 0.9;
-  letter-spacing: 0.01em;
+.hero-h1 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(3.2rem, 8vw, 6.5rem);
+  line-height: 1.0;
+  letter-spacing: -0.03em;
   margin-bottom: 28px;
-  animation: fadeUp 0.7s var(--transition) 0.35s both;
+  animation: fadeUp .6s var(--ease) .25s both;
 }
-
-.hero-heading .line-accent { color: var(--orange); }
-.hero-heading .line-stroke {
-  -webkit-text-stroke: 1px rgba(255,255,255,0.25);
-  color: transparent;
+.hero-h1 .line { display: block; }
+.hero-h1 .accent-orange { color: var(--orange); }
+.hero-h1 .accent-cyan   { color: var(--cyan); }
+.hero-h1 .accent-mixed {
+  background: linear-gradient(90deg, var(--violet), var(--orange));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 
 .hero-sub {
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--off);
   line-height: 1.65;
-  color: var(--muted);
-  max-width: 480px;
-  margin-bottom: 44px;
-  animation: fadeUp 0.7s var(--transition) 0.5s both;
+  max-width: 540px;
+  margin: 0 auto 44px;
+  font-weight: 300;
+  animation: fadeUp .6s var(--ease) .4s both;
 }
-.hero-sub strong { color: var(--off-white); font-weight: 500; }
 
 .hero-btns {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  animation: fadeUp 0.7s var(--transition) 0.65s both;
+  display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+  animation: fadeUp .6s var(--ease) .55s both;
 }
-
-@keyframes fadeUp {
-  from { transform: translateY(30px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
-}
-
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+.btn-primary-lg {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 32px;
   background: var(--orange);
-  color: #000;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 16px 32px;
-  border-radius: var(--radius);
-  border: none;
-  cursor: pointer;
-  transition: all var(--transition);
-}
-.btn-primary:hover {
-  background: #cf711f;
-  transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(230,126,34,0.3);
-}
-.btn-primary svg { width: 16px; height: 16px; transition: transform var(--transition); }
-.btn-primary:hover svg { transform: translateX(4px); }
-
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: transparent;
-  color: var(--off-white);
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 16px 32px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  transition: all var(--transition);
-}
-.btn-ghost:hover {
-  border-color: rgba(255,255,255,0.3);
-  background: rgba(255,255,255,0.04);
-  transform: translateY(-3px);
-}
-
-/* Hero image */
-.hero-visual {
-  position: relative;
-  animation: fadeUp 0.8s var(--transition) 0.5s both;
-}
-
-.hero-img-frame {
-  position: relative;
   border-radius: 10px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
-}
-
-.hero-img-frame img {
-  width: 100%;
-  height: 480px;
-  object-fit: cover;
-  display: block;
-  filter: brightness(0.9) contrast(1.05);
-}
-
-.hero-img-frame::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 60%, rgba(230,126,34,0.06) 100%);
-}
-
-/* Floating stats */
-.hero-stat-card {
-  position: absolute;
-  background: rgba(13,13,13,0.92);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(12px);
-  border-radius: var(--radius);
-  padding: 16px 22px;
-  animation: float 6s ease-in-out infinite;
-}
-
-.hero-stat-card:nth-child(2) {
-  bottom: -20px; left: -30px;
-  animation-delay: 0s;
-}
-.hero-stat-card:nth-child(3) {
-  top: 30px; right: -25px;
-  animation-delay: 3s;
-}
-
-@keyframes float {
-  0%,100% { transform: translateY(0); }
-  50%      { transform: translateY(-10px); }
-}
-
-.stat-value {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  letter-spacing: 0.02em;
-  color: var(--orange);
-  line-height: 1;
-}
-.stat-label {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--muted);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-top: 4px;
-}
-
-/* ============================================
-   MARQUEE STRIP
-   ============================================ */
-.marquee-strip {
-  background: var(--orange);
-  padding: 14px 0;
-  overflow: hidden;
-  border-top: 1px solid rgba(0,0,0,0.2);
-  border-bottom: 1px solid rgba(0,0,0,0.2);
-}
-
-.marquee-track {
-  display: flex;
-  gap: 0;
-  animation: marquee 22s linear infinite;
-  width: max-content;
-}
-
-.marquee-item {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  padding: 0 40px;
-  font-family: var(--font-display);
-  font-size: 1.1rem;
-  letter-spacing: 0.06em;
+  font-size: 0.95rem;
+  font-weight: 600;
   color: #000;
-  white-space: nowrap;
+  transition: all .25s var(--ease);
+  font-family: 'Inter', sans-serif;
 }
-
-.marquee-sep {
-  width: 5px; height: 5px;
-  background: rgba(0,0,0,0.3);
-  border-radius: 50%;
-  flex-shrink: 0;
+.btn-primary-lg:hover { background: #ea6a00; transform: translateY(-3px); box-shadow: 0 12px 32px rgba(249,115,22,0.3); }
+.btn-secondary-lg {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 32px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+  transition: all .25s var(--ease);
+  font-family: 'Inter', sans-serif;
+  backdrop-filter: blur(8px);
 }
+.btn-secondary-lg:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); transform: translateY(-3px); }
 
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+/* Hero scroll hint */
+.hero-scroll {
+  position: absolute;
+  bottom: 32px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  animation: fadeUp .6s var(--ease) .8s both;
 }
+.hero-scroll span { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.25); }
+.scroll-line {
+  width: 1px; height: 48px;
+  background: linear-gradient(to bottom, rgba(249,115,22,0.6), transparent);
+  animation: scrollLine 1.8s ease infinite;
+}
+@keyframes scrollLine { 0%,100% { opacity: 0; transform: scaleY(0); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
 
-/* ============================================
-   SECTION WRAPPER
-   ============================================ */
+@keyframes fadeUp { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+
+/* ─── STATS BAR ─── */
+.stats-bar {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 32px clamp(20px,5vw,60px);
+  background: rgba(255,255,255,0.02);
+}
+.stats-inner {
+  max-width: var(--max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+.stat-item {
+  text-align: center;
+  padding: 12px 20px;
+  border-right: 1px solid var(--border);
+}
+.stat-item:last-child { border-right: none; }
+.stat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #fff 30%, rgba(249,115,22,0.7));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-label { font-size: 0.82rem; color: var(--off); letter-spacing: 0.01em; }
+
+/* ─── SECTION BASE ─── */
 .section {
-  padding: 120px 5%;
+  padding: clamp(80px,10vw,140px) clamp(20px,5vw,60px);
   position: relative;
 }
+.section-max { max-width: var(--max); margin: 0 auto; }
 
-.section-header {
-  margin-bottom: 72px;
+.tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 18px;
 }
-
-.section-header .label {
-  display: block;
-  margin-bottom: 16px;
-}
-
-/* ============================================
-   OFFER SECTION (WHAT WE OFFER)
-   ============================================ */
-.offer-section {
-  background: var(--charcoal);
-}
-
-.offer-section::before {
+.tag::before {
   content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--orange), transparent);
+  display: block; width: 16px; height: 1px;
+  background: var(--orange);
 }
 
-.offer-grid {
-  max-width: var(--max-w);
-  margin: 0 auto;
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin-bottom: 20px;
+}
+.section-title .o { color: var(--orange); }
+.section-title .c { color: var(--cyan); }
+
+.section-sub {
+  font-size: 1.05rem;
+  color: var(--off);
+  line-height: 1.7;
+  max-width: 520px;
 }
 
-.offer-row {
+/* ─── FEATURES ALTERNATING ─── */
+.features-section { background: #08090c; }
+
+.feat-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 80px;
   align-items: center;
-  padding: 80px 0;
+  padding: 70px 0;
   border-bottom: 1px solid var(--border);
 }
-.offer-row:first-child { padding-top: 0; }
-.offer-row:last-child  { border-bottom: none; padding-bottom: 0; }
+.feat-row:last-child { border-bottom: none; }
+.feat-row.flip { direction: rtl; }
+.feat-row.flip > * { direction: ltr; }
 
-.offer-row.flip { direction: rtl; }
-.offer-row.flip > * { direction: ltr; }
-
-.offer-text h3 {
-  font-family: var(--font-display);
-  font-size: clamp(2.2rem, 4vw, 3.5rem);
-  line-height: 0.95;
-  margin-bottom: 20px;
-  letter-spacing: 0.02em;
+.feat-text .tag { margin-bottom: 14px; }
+.feat-text h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  margin-bottom: 18px;
 }
-
-.offer-text p {
-  font-size: 1.05rem;
-  line-height: 1.7;
-  color: var(--muted);
-  margin-bottom: 36px;
-  max-width: 480px;
+.feat-text p {
+  font-size: 1rem;
+  color: var(--off);
+  line-height: 1.75;
+  margin-bottom: 30px;
 }
-
-.feature-list { display: flex; flex-direction: column; gap: 14px; }
-
-.feature-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  font-size: 0.95rem;
-  color: var(--off-white);
-  line-height: 1.5;
+.feat-list { display: flex; flex-direction: column; gap: 12px; }
+.feat-list li {
+  display: flex; align-items: flex-start; gap: 12px;
+  font-size: 0.94rem; color: rgba(255,255,255,0.85); line-height: 1.5;
 }
-
-.feature-icon {
-  width: 22px; height: 22px;
-  background: var(--orange-dim);
-  border: 1px solid var(--border-hot);
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.feat-list li::before {
+  content: '';
+  display: block;
   flex-shrink: 0;
-  margin-top: 1px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: rgba(249,115,22,0.12);
+  border: 1px solid rgba(249,115,22,0.3);
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='8' viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 3.5L3.5 6L9 1' stroke='%23f97316' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-top: 2px;
 }
-.feature-icon svg { width: 11px; height: 11px; color: var(--orange); }
 
-.feature-item strong { color: var(--white); font-weight: 600; }
-
-.offer-visual {
-  position: relative;
-  border-radius: 10px;
+/* Feature visual card */
+.feat-visual {
+  border-radius: 16px;
   overflow: hidden;
+  position: relative;
+  background: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+  transition: transform .4s var(--ease);
 }
-
-.offer-visual img {
+.feat-visual:hover { transform: translateY(-6px) scale(1.01); }
+.feat-visual img {
   width: 100%;
-  height: 420px;
+  height: 380px;
   object-fit: cover;
   display: block;
-  transition: transform 0.8s var(--transition);
-  filter: brightness(0.88);
+  filter: brightness(0.88) saturate(1.1);
 }
-
-.offer-visual:hover img { transform: scale(1.04); }
-
-.offer-chip {
+.feat-visual-glow {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(135deg, rgba(249,115,22,0.06) 0%, transparent 50%);
+}
+.feat-chip {
   position: absolute;
-  bottom: 20px; right: 20px;
-  background: rgba(5,5,5,0.88);
-  border: 1px solid var(--border-hot);
-  backdrop-filter: blur(10px);
-  border-radius: var(--radius);
-  padding: 12px 18px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  bottom: 18px; right: 18px;
+  background: rgba(8,9,12,0.88);
+  border: 1px solid rgba(249,115,22,0.3);
+  backdrop-filter: blur(12px);
+  border-radius: 10px;
+  padding: 10px 16px;
+  display: flex; align-items: center; gap: 10px;
 }
-.offer-chip-dot { width: 8px; height: 8px; background: var(--orange); border-radius: 50%; animation: pulse 2s ease infinite; }
-.offer-chip-text { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--off-white); }
+.feat-chip-pulse {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 0 8px rgba(249,115,22,0.8);
+  animation: blink 2s ease infinite;
+}
+.feat-chip-txt { font-size: 0.75rem; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); }
 
-/* ============================================
-   PROJECTS SECTION
-   ============================================ */
-.projects-section {
-  background: var(--black);
-  position: relative;
-  overflow: hidden;
-}
-
-.projects-bg-number {
-  position: absolute;
-  top: 50%;
-  right: -2%;
-  transform: translateY(-50%);
-  font-family: var(--font-display);
-  font-size: 30vw;
-  color: rgba(255,255,255,0.015);
-  line-height: 1;
-  pointer-events: none;
-  user-select: none;
-  letter-spacing: -0.05em;
-}
+/* ─── PROJECTS GRID ─── */
+.projects-section { background: linear-gradient(180deg, #08090c 0%, #0c0d12 100%); }
 
 .projects-grid {
-  max-width: var(--max-w);
-  margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: 20px;
+  margin-top: 60px;
 }
 
-.project-card {
-  position: relative;
-  border-radius: 8px;
+.proj-card {
+  border-radius: 14px;
   overflow: hidden;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  aspect-ratio: 3/4;
-  cursor: pointer;
-  transition: border-color var(--transition), transform var(--transition);
-}
-
-.project-card:hover {
-  border-color: var(--border-hot);
-  transform: translateY(-6px);
-}
-
-.project-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.7s var(--transition), filter 0.5s ease;
-  filter: brightness(0.75) saturate(0.9);
-}
-
-.project-card:hover img {
-  transform: scale(1.08);
-  filter: brightness(0.4) saturate(0.7);
-}
-
-.project-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(5,5,5,0.98) 0%, rgba(230,126,34,0.08) 50%, transparent 100%);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 28px;
-  opacity: 0;
-  transition: opacity 0.5s var(--transition);
-}
-
-.project-card:hover .project-overlay { opacity: 1; }
-
-/* Always visible bottom info */
-.project-info {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  padding: 22px 22px 18px;
-  background: linear-gradient(to top, rgba(5,5,5,0.96) 0%, transparent 100%);
-}
-
-.project-cat {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--orange);
-  margin-bottom: 6px;
-}
-
-.project-title {
-  font-family: var(--font-display);
-  font-size: 1.6rem;
-  letter-spacing: 0.02em;
-  line-height: 1;
-  color: var(--white);
-}
-
-.project-desc {
-  font-size: 0.88rem;
-  line-height: 1.55;
-  color: var(--muted);
-  margin-top: 10px;
-}
-
-/* ============================================
-   PRICING SECTION
-   ============================================ */
-.pricing-section {
-  background: var(--charcoal);
   position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  aspect-ratio: 4/5;
+  cursor: default;
+  transition: border-color .3s, transform .4s var(--ease);
 }
+.proj-card:hover { border-color: rgba(249,115,22,0.35); transform: translateY(-8px); }
+.proj-card img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  transition: transform .6s var(--ease), filter .4s;
+  filter: brightness(0.72) saturate(0.9);
+}
+.proj-card:hover img { transform: scale(1.06); filter: brightness(0.45) saturate(0.8); }
 
-.pricing-section::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--orange), transparent);
+.proj-always {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 22px 20px 18px;
+  background: linear-gradient(to top, rgba(8,9,12,0.97) 0%, transparent 100%);
 }
+.proj-cat { font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--orange); margin-bottom: 5px; }
+.proj-name { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; }
+
+.proj-hover {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 22px 20px;
+  opacity: 0;
+  transition: opacity .4s var(--ease);
+  background: linear-gradient(to top, rgba(8,9,12,0.98) 30%, rgba(249,115,22,0.04) 100%);
+}
+.proj-card:hover .proj-hover { opacity: 1; }
+.proj-hover .proj-cat { margin-bottom: 6px; }
+.proj-hover .proj-name { margin-bottom: 10px; }
+.proj-desc { font-size: 0.87rem; color: var(--off); line-height: 1.55; }
+
+/* ─── MARQUEE ─── */
+.marquee-wrap {
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+  background: rgba(249,115,22,0.06);
+}
+.marquee-track {
+  display: flex;
+  animation: marquee 24s linear infinite;
+  width: max-content;
+}
+.marquee-item {
+  display: flex; align-items: center; gap: 20px;
+  padding: 14px 32px;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  white-space: nowrap;
+}
+.marquee-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--orange); flex-shrink: 0; opacity: 0.6; }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ─── PRICING ─── */
+.pricing-section { background: #08090c; }
+
+.pricing-header { text-align: center; margin-bottom: 60px; }
+.pricing-header .section-sub { margin: 0 auto; }
 
 .pricing-grid {
-  max-width: var(--max-w);
-  margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: 20px;
   align-items: stretch;
 }
 
 .price-card {
-  background: var(--surface);
+  background: rgba(255,255,255,0.03);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 44px 36px;
-  display: flex;
-  flex-direction: column;
+  border-radius: 16px;
+  padding: 36px 30px;
+  display: flex; flex-direction: column;
   position: relative;
-  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+  transition: border-color .3s, transform .3s var(--ease), box-shadow .3s;
+}
+.price-card:hover { border-color: rgba(249,115,22,0.3); transform: translateY(-5px); box-shadow: 0 24px 48px rgba(0,0,0,0.4); }
+.price-card.hot {
+  background: rgba(249,115,22,0.05);
+  border-color: rgba(249,115,22,0.5);
+  box-shadow: 0 0 0 1px rgba(249,115,22,0.08);
 }
 
-.price-card:hover {
-  border-color: var(--border-hot);
-  transform: translateY(-6px);
-  box-shadow: 0 24px 48px rgba(0,0,0,0.4);
-}
-
-.price-card.featured {
-  background: var(--surface-2);
-  border-color: var(--orange);
-  box-shadow: 0 0 0 1px rgba(230,126,34,0.1), 0 30px 60px rgba(0,0,0,0.4);
-  transform: scale(1.03);
-}
-.price-card.featured:hover { transform: scale(1.03) translateY(-6px); }
-
-.price-featured-badge {
-  position: absolute;
-  top: -14px;
-  left: 50%;
-  transform: translateX(-50%);
+.price-badge {
+  position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
   background: var(--orange);
   color: #000;
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  padding: 5px 18px;
-  border-radius: 20px;
+  font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 4px 16px;
+  border-radius: 100px;
   white-space: nowrap;
 }
 
-.price-icon {
-  width: 48px; height: 48px;
-  background: var(--orange-dim);
-  border: 1px solid var(--border-hot);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 24px;
+.price-icon-wrap {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  background: rgba(249,115,22,0.1);
+  border: 1px solid rgba(249,115,22,0.2);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
 }
-.price-icon svg { width: 22px; height: 22px; color: var(--orange); }
+.price-icon-wrap svg { width: 20px; height: 20px; color: var(--orange); }
 
 .price-name {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  letter-spacing: 0.03em;
-  margin-bottom: 10px;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem; font-weight: 800;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
 }
+.price-desc { font-size: 0.88rem; color: var(--off); line-height: 1.6; margin-bottom: 24px; min-height: 52px; }
 
-.price-desc {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: var(--muted);
-  margin-bottom: 30px;
-  flex-grow: 0;
-  min-height: 60px;
-}
+.price-divider { border: none; border-top: 1px solid var(--border); margin-bottom: 24px; }
 
-.price-divider {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin-bottom: 30px;
-}
-
-.price-amount {
-  font-family: var(--font-display);
-  font-size: 3rem;
-  letter-spacing: 0.02em;
+.price-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 3.2rem; font-weight: 800;
+  letter-spacing: -0.04em;
   color: var(--orange);
   line-height: 1;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
-.price-amount.custom { font-size: 1.6rem; color: var(--muted); }
+.price-val.custom-val { font-size: 1.5rem; color: var(--off); }
+.price-per { font-size: 0.78rem; color: rgba(255,255,255,0.3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 28px; }
 
-.price-note {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--muted-2);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 30px;
-}
+.price-feats { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; flex-grow: 1; }
+.price-feats li { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: rgba(255,255,255,0.82); }
+.price-feats li svg { width: 15px; height: 15px; color: var(--orange); flex-shrink: 0; }
 
-.price-features {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 36px;
-  flex-grow: 1;
-}
-
-.price-feature {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 0.92rem;
-  color: var(--off-white);
-}
-
-.price-check {
-  width: 18px; height: 18px;
-  flex-shrink: 0;
-  color: var(--orange);
-}
-
-.btn-price {
-  display: block;
-  width: 100%;
-  padding: 15px;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  text-align: center;
-  border-radius: var(--radius);
+.btn-price-outline {
+  display: block; width: 100%; text-align: center;
+  padding: 13px;
   border: 1px solid var(--border);
-  background: transparent;
-  color: var(--off-white);
-  cursor: pointer;
-  transition: all var(--transition);
+  border-radius: 10px;
+  font-size: 0.88rem; font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  transition: all .2s;
   margin-top: auto;
 }
-.btn-price:hover {
-  border-color: rgba(255,255,255,0.3);
-  background: rgba(255,255,255,0.04);
-}
-.btn-price.primary {
+.btn-price-outline:hover { border-color: rgba(255,255,255,0.3); color: #fff; background: rgba(255,255,255,0.05); }
+.btn-price-fill {
+  display: block; width: 100%; text-align: center;
+  padding: 13px;
   background: var(--orange);
-  border-color: var(--orange);
+  border-radius: 10px;
+  font-size: 0.88rem; font-weight: 600;
   color: #000;
+  transition: all .2s;
+  margin-top: auto;
+  border: none;
 }
-.btn-price.primary:hover {
-  background: #cf711f;
-  border-color: #cf711f;
-  box-shadow: 0 10px 24px rgba(230,126,34,0.25);
-}
+.btn-price-fill:hover { background: #ea6a00; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(249,115,22,0.25); }
 
-/* ============================================
-   CONTACT SECTION
-   ============================================ */
+/* ─── CONTACT SECTION ─── */
 .contact-section {
-  background: var(--black);
-  position: relative;
+  background: linear-gradient(180deg, #08090c 0%, #0c0e18 100%);
+  position: relative; overflow: hidden;
+}
+.contact-section::before {
+  content: '';
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 500px;
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(168,85,247,0.08) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .contact-inner {
-  max-width: var(--max-w);
-  margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap: 80px;
-  align-items: start;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 80px; align-items: start;
 }
+.contact-left { position: sticky; top: 100px; }
+.contact-left h2 { font-family: 'Syne', sans-serif; font-size: clamp(2rem,4vw,3.4rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 18px; }
+.contact-left h2 em { font-style: normal; color: var(--orange); }
+.contact-left p { font-size: 1rem; color: var(--off); line-height: 1.7; margin-bottom: 40px; }
 
-.contact-info { position: sticky; top: 100px; }
-
-.contact-info h2 {
-  font-family: var(--font-display);
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
-  line-height: 0.92;
-  letter-spacing: 0.02em;
-  margin-bottom: 24px;
-  color: var(--white);
-}
-.contact-info h2 span { color: var(--orange); }
-
-.contact-info p {
-  font-size: 1rem;
-  line-height: 1.7;
-  color: var(--muted);
-  margin-bottom: 48px;
-}
-
-.contact-methods { display: flex; flex-direction: column; gap: 16px; }
-
-.contact-method {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 20px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  transition: border-color var(--transition), background var(--transition);
-}
-.contact-method:hover {
-  border-color: var(--border-hot);
-  background: var(--surface-2);
-}
-.contact-method-icon {
-  width: 36px; height: 36px;
-  background: var(--orange-dim);
-  border: 1px solid var(--border-hot);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.contact-method-icon svg { width: 16px; height: 16px; color: var(--orange); }
-.contact-method-label { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
-.contact-method-value { font-size: 0.92rem; font-weight: 500; color: var(--white); }
-
-/* Form */
-.contact-form-wrap {
+.contact-meta { display: flex; flex-direction: column; gap: 12px; }
+.cmeta {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 18px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 48px;
+  transition: border-color .2s;
+}
+.cmeta:hover { border-color: rgba(249,115,22,0.3); }
+.cmeta-ico {
+  width: 34px; height: 34px;
+  background: rgba(249,115,22,0.1);
+  border: 1px solid rgba(249,115,22,0.2);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.cmeta-ico svg { width: 14px; height: 14px; color: var(--orange); }
+.cmeta-label { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 2px; }
+.cmeta-val { font-size: 0.9rem; font-weight: 500; }
+
+/* Form */
+.form-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 44px 40px;
 }
 
-.form-group {
+.form-status {
+  display: none;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 0.84rem;
   margin-bottom: 24px;
+  align-items: center; gap: 10px;
 }
+.form-status.ok { display: flex; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.25); color: #4ade80; }
+.form-status.err { display: flex; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); color: #f87171; }
 
 .form-label {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
   display: block;
-  margin-bottom: 10px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 8px;
 }
-
-.form-preset-title {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+.form-step-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--orange);
-  display: block;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
+.fg { margin-bottom: 20px; }
+.f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-.pill-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 10px;
-}
-
-.pill-grid input[type="radio"] { display: none; }
-
-.pill-grid label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 12px;
-  background: var(--charcoal);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-  cursor: pointer;
-  transition: all 0.25s ease;
-  text-align: center;
-}
-.pill-grid label:hover { border-color: rgba(255,255,255,0.2); color: var(--white); }
-.pill-grid input:checked + label {
-  background: var(--orange-dim);
-  border-color: var(--orange);
-  color: var(--orange);
-}
-
-.color-dot-sm {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-  border: 1px solid rgba(255,255,255,0.15);
-  flex-shrink: 0;
-}
-
-.form-input, .form-textarea, .form-select {
+.finput, .ftextarea {
   width: 100%;
-  background: var(--charcoal);
+  background: rgba(255,255,255,0.04);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--white);
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  padding: 14px 18px;
+  border-radius: 10px;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.94rem;
+  padding: 13px 16px;
   outline: none;
-  transition: border-color var(--transition), box-shadow var(--transition);
-  -webkit-appearance: none;
+  transition: border-color .2s, box-shadow .2s;
 }
-.form-input:focus, .form-textarea:focus, .form-select:focus {
-  border-color: var(--orange);
-  box-shadow: 0 0 0 3px rgba(230,126,34,0.12);
+.finput:focus, .ftextarea:focus {
+  border-color: rgba(249,115,22,0.5);
+  box-shadow: 0 0 0 3px rgba(249,115,22,0.08);
 }
-.form-input::placeholder, .form-textarea::placeholder { color: var(--muted-2); }
+.finput::placeholder, .ftextarea::placeholder { color: rgba(255,255,255,0.2); }
+.ftextarea { resize: vertical; min-height: 110px; }
 
-.form-textarea { resize: vertical; min-height: 120px; }
-
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-
-.form-divider {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 28px 0;
+/* Pill selectors */
+.pill-row {
+  display: flex; flex-wrap: wrap; gap: 8px;
 }
+.pill-row input[type="radio"] { display: none; }
+.pill-row label {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 0.8rem;
+  color: var(--off);
+  cursor: pointer;
+  transition: all .18s;
+}
+.pill-row label:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
+.pill-row input:checked + label {
+  background: rgba(249,115,22,0.12);
+  border-color: rgba(249,115,22,0.5);
+  color: var(--orange);
+}
+
+.color-dot { width: 9px; height: 9px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); display: inline-block; flex-shrink: 0; }
+
+.form-sep { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
 
 .btn-submit {
   width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 16px;
   background: var(--orange);
-  color: #000;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  padding: 18px;
   border: none;
-  border-radius: var(--radius);
+  border-radius: 10px;
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: #000;
   cursor: pointer;
-  transition: all var(--transition);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+  font-family: 'Inter', sans-serif;
+  transition: all .25s var(--ease);
 }
-.btn-submit:hover {
-  background: #cf711f;
-  transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(230,126,34,0.3);
-}
+.btn-submit:hover { background: #ea6a00; transform: translateY(-3px); box-shadow: 0 12px 28px rgba(249,115,22,0.3); }
 .btn-submit svg { width: 16px; height: 16px; }
 
-/* Form status */
-.form-status {
-  display: none;
-  padding: 16px 20px;
-  border-radius: var(--radius);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  margin-bottom: 24px;
+/* ─── CTA BAND ─── */
+.cta-band {
+  background: linear-gradient(135deg, rgba(249,115,22,0.08) 0%, rgba(168,85,247,0.06) 100%);
+  border-top: 1px solid rgba(249,115,22,0.15);
+  border-bottom: 1px solid rgba(249,115,22,0.1);
+  padding: 80px clamp(20px,5vw,60px);
+  text-align: center;
+  position: relative; overflow: hidden;
 }
-.form-status.success {
-  background: rgba(46,204,113,0.08);
-  border: 1px solid rgba(46,204,113,0.3);
-  color: #2ecc71;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.form-status.error {
-  background: rgba(231,76,60,0.08);
-  border: 1px solid rgba(231,76,60,0.3);
-  color: #e74c3c;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* ============================================
-   CTA REDIRECT BANNER
-   ============================================ */
-.cta-banner {
-  background: var(--charcoal);
-  border-top: 1px solid var(--border);
-  padding: 80px 5%;
-  position: relative;
-  overflow: hidden;
-}
-
-.cta-banner::before {
+.cta-band::before {
   content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--orange), transparent);
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 600px; height: 300px;
+  background: radial-gradient(ellipse, rgba(249,115,22,0.07) 0%, transparent 70%);
+  pointer-events: none;
 }
+.cta-band h2 { font-family: 'Syne', sans-serif; font-size: clamp(2rem,4.5vw,3.5rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 16px; }
+.cta-band h2 span { color: var(--orange); }
+.cta-band p { font-size: 1.05rem; color: var(--off); margin-bottom: 36px; max-width: 480px; margin-left: auto; margin-right: auto; }
+.cta-band-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; position: relative; }
 
-.cta-banner-inner {
-  max-width: var(--max-w);
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 40px;
-}
-
-.cta-banner-text h2 {
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  letter-spacing: 0.02em;
-  line-height: 1;
-  margin-bottom: 10px;
-}
-.cta-banner-text h2 span { color: var(--orange); }
-.cta-banner-text p {
-  font-size: 1rem;
-  color: var(--muted);
-  max-width: 480px;
-  line-height: 1.6;
-}
-
-.cta-banner-btns { display: flex; gap: 14px; flex-shrink: 0; }
-
-/* ============================================
-   FOOTER
-   ============================================ */
+/* ─── FOOTER ─── */
 footer {
-  background: #000;
+  background: #050608;
   border-top: 1px solid var(--border);
-  padding: 48px 5% 32px;
+  padding: 52px clamp(20px,5vw,60px) 32px;
 }
-
-.footer-inner {
-  max-width: var(--max-w);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1fr;
-  gap: 40px;
+.footer-top {
+  max-width: var(--max); margin: 0 auto;
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 40px;
   padding-bottom: 40px;
   border-bottom: 1px solid var(--border);
 }
-
-.footer-logo img { height: 32px; width: auto; margin-bottom: 14px; }
-.footer-tagline { font-size: 0.88rem; line-height: 1.6; color: var(--muted); max-width: 240px; }
-
-.footer-col h4 {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted-2);
-  margin-bottom: 18px;
-}
-.footer-col a, .footer-col p {
-  display: block;
-  font-size: 0.88rem;
-  color: var(--muted);
-  margin-bottom: 10px;
-  line-height: 1.5;
-  transition: color var(--transition);
-}
-.footer-col a:hover { color: var(--white); }
-
+.footer-brand img { height: 28px; width: auto; margin-bottom: 14px; }
+.footer-brand p { font-size: 0.87rem; color: var(--off); line-height: 1.65; max-width: 220px; }
+.footer-col h5 { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 16px; }
+.footer-col a, .footer-col p { display: block; font-size: 0.87rem; color: var(--off); margin-bottom: 9px; transition: color .2s; line-height: 1.5; }
+.footer-col a:hover { color: #fff; }
 .footer-bottom {
-  max-width: var(--max-w);
-  margin: 0 auto;
-  padding-top: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+  max-width: var(--max); margin: 28px auto 0;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
 }
-.footer-bottom p {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted-2);
-}
-.footer-domain {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted-2);
-}
-.footer-domain span { color: var(--orange); }
+.footer-bottom p { font-size: 0.76rem; color: rgba(255,255,255,0.2); letter-spacing: 0.05em; }
+.footer-bottom-right { font-size: 0.76rem; color: rgba(255,255,255,0.2); }
+.footer-bottom-right span { color: rgba(249,115,22,0.6); }
 
-/* ============================================
-   SCROLL ANIMATIONS
-   ============================================ */
-.reveal {
-  opacity: 0;
-  transform: translateY(32px);
-  transition: opacity 0.7s var(--transition), transform 0.7s var(--transition);
-}
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-.reveal-delay-1 { transition-delay: 0.1s; }
-.reveal-delay-2 { transition-delay: 0.2s; }
-.reveal-delay-3 { transition-delay: 0.3s; }
-.reveal-delay-4 { transition-delay: 0.4s; }
+/* ─── SCROLL REVEAL ─── */
+.sr { opacity: 0; transform: translateY(30px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+.sr.in { opacity: 1; transform: translateY(0); }
+.sr-d1 { transition-delay: .08s; }
+.sr-d2 { transition-delay: .16s; }
+.sr-d3 { transition-delay: .24s; }
+.sr-d4 { transition-delay: .32s; }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
-@media (max-width: 1100px) {
-  .hero-inner { gap: 50px; }
-  .offer-row { gap: 50px; }
-  .contact-inner { gap: 50px; }
-  .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1024px) {
+  .feat-row { gap: 48px; }
+  .contact-inner { gap: 48px; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
 }
-
-@media (max-width: 900px) {
-  .hero-inner { grid-template-columns: 1fr; }
-  .hero-visual { order: -1; }
-  .hero-stat-card:nth-child(3) { right: 0; }
-  .offer-row, .offer-row.flip { grid-template-columns: 1fr; direction: ltr; gap: 40px; }
+@media (max-width: 860px) {
+  .stats-inner { grid-template-columns: repeat(2, 1fr); }
+  .stat-item:nth-child(2) { border-right: none; }
+  .stat-item:nth-child(3) { border-right: 1px solid var(--border); }
+  .stat-item:nth-child(3), .stat-item:nth-child(4) { border-top: 1px solid var(--border); }
+  .feat-row, .feat-row.flip { grid-template-columns: 1fr; direction: ltr; gap: 36px; }
   .projects-grid { grid-template-columns: repeat(2, 1fr); }
-  .pricing-grid { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
-  .price-card.featured { transform: none; }
+  .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
   .contact-inner { grid-template-columns: 1fr; }
-  .contact-info { position: static; }
-  .cta-banner-inner { flex-direction: column; text-align: center; }
-  .cta-banner-btns { justify-content: center; }
+  .contact-left { position: static; }
+  .footer-top { grid-template-columns: 1fr 1fr; }
 }
-
-@media (max-width: 640px) {
-  .section { padding: 80px 5%; }
-  .topbar-link { display: none; }
+@media (max-width: 600px) {
+  .nav-links { display: none; }
   .projects-grid { grid-template-columns: 1fr; }
-  .form-row { grid-template-columns: 1fr; }
-  .hero-btns { flex-direction: column; }
-  .btn-primary, .btn-ghost { text-align: center; justify-content: center; }
-  .contact-form-wrap { padding: 28px 22px; }
-  .footer-inner { grid-template-columns: 1fr; }
-  .footer-bottom { flex-direction: column; text-align: center; gap: 8px; }
-  .pill-grid { grid-template-columns: repeat(3, 1fr); }
+  .stats-inner { grid-template-columns: repeat(2,1fr); }
+  .stat-item { border-right: none !important; border-bottom: 1px solid var(--border); }
+  .stat-item:last-child { border-bottom: none; }
+  .f2 { grid-template-columns: 1fr; }
+  .form-box { padding: 28px 20px; }
+  .footer-top { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+  .hero-btns { flex-direction: column; align-items: center; }
+  .btn-primary-lg, .btn-secondary-lg { width: 100%; justify-content: center; }
 }
 </style>
 </head>
 <body>
 
-<!-- ============================================
-   TOPBAR
-   ============================================ -->
-<header class="topbar">
-  <div class="topbar-logo">
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="nav-logo">
     <img src="https://cdn.shopify.com/s/files/1/0720/6325/4803/files/BRATUS_BALTS_LOGO_PNG_31ca2710-d923-44ca-ab97-7d4706e0ce6d.png?v=1764954367" alt="Bratus">
-    <span class="topbar-domain">3dpakalpojumi.lv</span>
+    <div class="nav-logo-text">3D<span>pakalpojumi</span>.lv</div>
   </div>
-  <nav class="topbar-cta">
-    <a href="#pakalpojumi" class="topbar-link">Pakalpojumi</a>
-    <a href="#projekti" class="topbar-link">Projekti</a>
-    <a href="#cenas" class="topbar-link">Cenas</a>
-    <a href="https://bratus.lv/pages/3d-pakalpojumi" target="_blank" class="btn-nav">Bratus.lv →</a>
-  </nav>
-</header>
+  <ul class="nav-links">
+    <li><a href="#pakalpojumi">Pakalpojumi</a></li>
+    <li><a href="#projekti">Projekti</a></li>
+    <li><a href="#cenas">Cenas</a></li>
+    <li><a href="#pieteikums">Kontakts</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="https://bratus.lv" target="_blank" class="btn-outline-sm">bratus.lv</a>
+    <a href="#pieteikums" class="btn-primary-sm">Pieteikt projektu →</a>
+  </div>
+</nav>
 
-<!-- ============================================
-   HERO
-   ============================================ -->
+<!-- ═══ HERO ═══ -->
 <section class="hero">
-  <div class="hero-grid"></div>
-  <div class="hero-glow"></div>
-  <div class="hero-glow-2"></div>
-
   <div class="hero-inner">
-    <div class="hero-text">
-      <div class="hero-badge">
-        <span class="dot"></span>
-        <span class="label">Latvijā ražots · Bambu Lab flote</span>
-      </div>
-
-      <h1 class="hero-heading">
-        <span class="line-accent">3D</span><br>
-        DRUKAS<br>
-        <span class="line-stroke">EKSPERTI</span>
-      </h1>
-
-      <p class="hero-sub">
-        Profesionāla <strong>3D printēšana</strong> un <strong>modelēšana</strong> —
-        no pirmās skices līdz gatavam izstrādājumam.
-        Ātra izpilde, augstākā kvalitāte, godīgas cenas.
-      </p>
-
-      <div class="hero-btns">
-        <a href="#pieteikums" class="btn-primary">
-          Pieteikt projektu
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </a>
-        <a href="https://bratus.lv/pages/3d-pakalpojumi" target="_blank" class="btn-ghost">
-          Skatīt bratus.lv
-        </a>
-      </div>
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Bambu Lab flote · Ātra izpilde Latvijā
     </div>
 
-    <div class="hero-visual">
-      <div class="hero-img-frame">
-        <img src="https://cdn.shopify.com/s/files/1/0720/6325/4803/files/Gemini_Generated_Image_qjlz5dqjlz5dqjlz.webp?v=1778054810" alt="3D printēšana">
+    <h1 class="hero-h1">
+      <span class="line">Profesionāla</span>
+      <span class="line accent-orange">3D druka</span>
+      <span class="line accent-mixed">bez kompromisiem</span>
+    </h1>
 
-        <div class="hero-stat-card">
-          <div class="stat-value">7+</div>
-          <div class="stat-label">Bambu Lab printeri</div>
-        </div>
-        <div class="hero-stat-card">
-          <div class="stat-value">3€</div>
-          <div class="stat-label">No /h drukai</div>
-        </div>
-      </div>
+    <p class="hero-sub">
+      No pirmās skices līdz gatavam izstrādājumam — <br>
+      modelēšana, printēšana un prototipēšana vienā vietā.
+    </p>
+
+    <div class="hero-btns">
+      <a href="#pieteikums" class="btn-primary-lg">
+        Pieteikt projektu
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <a href="https://bratus.lv/pages/3d-pakalpojumi" target="_blank" class="btn-secondary-lg">
+        Skatīt bratus.lv ↗
+      </a>
     </div>
+  </div>
+
+  <div class="hero-scroll">
+    <span>Ritināt</span>
+    <div class="scroll-line"></div>
   </div>
 </section>
 
-<!-- ============================================
-   MARQUEE
-   ============================================ -->
-<div class="marquee-strip" aria-hidden="true">
-  <div class="marquee-track">
-    <!-- duplicated for seamless loop -->
-    <span class="marquee-item">PLA<span class="marquee-sep"></span></span>
-    <span class="marquee-item">PETG<span class="marquee-sep"></span></span>
-    <span class="marquee-item">ABS<span class="marquee-sep"></span></span>
-    <span class="marquee-item">TPU FLEX<span class="marquee-sep"></span></span>
-    <span class="marquee-item">NYLON<span class="marquee-sep"></span></span>
-    <span class="marquee-item">CARBON FIBER<span class="marquee-sep"></span></span>
-    <span class="marquee-item">PC<span class="marquee-sep"></span></span>
-    <span class="marquee-item">ASA<span class="marquee-sep"></span></span>
-    <span class="marquee-item">BAMBU LAB P1S<span class="marquee-sep"></span></span>
-    <span class="marquee-item">BAMBU LAB A1 MINI<span class="marquee-sep"></span></span>
-    <span class="marquee-item">3D MODELĒŠANA<span class="marquee-sep"></span></span>
-    <span class="marquee-item">PROTOTIPĒŠANA<span class="marquee-sep"></span></span>
-    <span class="marquee-item">PLA<span class="marquee-sep"></span></span>
-    <span class="marquee-item">PETG<span class="marquee-sep"></span></span>
-    <span class="marquee-item">ABS<span class="marquee-sep"></span></span>
-    <span class="marquee-item">TPU FLEX<span class="marquee-sep"></span></span>
-    <span class="marquee-item">NYLON<span class="marquee-sep"></span></span>
-    <span class="marquee-item">CARBON FIBER<span class="marquee-sep"></span></span>
-    <span class="marquee-item">PC<span class="marquee-sep"></span></span>
-    <span class="marquee-item">ASA<span class="marquee-sep"></span></span>
-    <span class="marquee-item">BAMBU LAB P1S<span class="marquee-sep"></span></span>
-    <span class="marquee-item">BAMBU LAB A1 MINI<span class="marquee-sep"></span></span>
-    <span class="marquee-item">3D MODELĒŠANA<span class="marquee-sep"></span></span>
-    <span class="marquee-item">PROTOTIPĒŠANA<span class="marquee-sep"></span></span>
+<!-- ═══ STATS ═══ -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item sr">
+      <div class="stat-num">7+</div>
+      <div class="stat-label">Bambu Lab printeri</div>
+    </div>
+    <div class="stat-item sr sr-d1">
+      <div class="stat-num">3€</div>
+      <div class="stat-label">No /h printēšanai</div>
+    </div>
+    <div class="stat-item sr sr-d2">
+      <div class="stat-num">9+</div>
+      <div class="stat-label">Materiālu tipi</div>
+    </div>
+    <div class="stat-item sr sr-d3">
+      <div class="stat-num">24h</div>
+      <div class="stat-label">Atbilde uz pieprasījumu</div>
+    </div>
   </div>
 </div>
 
-<!-- ============================================
-   OFFER SECTION
-   ============================================ -->
-<section class="section offer-section" id="pakalpojumi">
-  <div class="offer-grid">
-    <div class="section-header reveal">
-      <span class="label">Ko mēs piedāvājam</span>
-      <h2 class="section-title">Mūsu<br><span>tehnoloģijas</span></h2>
+<!-- ═══ MARQUEE ═══ -->
+<div class="marquee-wrap" aria-hidden="true">
+  <div class="marquee-track">
+    <span class="marquee-item">PLA<span class="marquee-dot"></span></span>
+    <span class="marquee-item">PETG<span class="marquee-dot"></span></span>
+    <span class="marquee-item">ABS<span class="marquee-dot"></span></span>
+    <span class="marquee-item">TPU Flex<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Nylon<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Carbon Fiber<span class="marquee-dot"></span></span>
+    <span class="marquee-item">PC<span class="marquee-dot"></span></span>
+    <span class="marquee-item">ASA<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Bambu Lab P1S<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Bambu Lab A1 Mini<span class="marquee-dot"></span></span>
+    <span class="marquee-item">3D Modelēšana<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Prototipēšana<span class="marquee-dot"></span></span>
+    <!-- duplicate for seamless loop -->
+    <span class="marquee-item">PLA<span class="marquee-dot"></span></span>
+    <span class="marquee-item">PETG<span class="marquee-dot"></span></span>
+    <span class="marquee-item">ABS<span class="marquee-dot"></span></span>
+    <span class="marquee-item">TPU Flex<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Nylon<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Carbon Fiber<span class="marquee-dot"></span></span>
+    <span class="marquee-item">PC<span class="marquee-dot"></span></span>
+    <span class="marquee-item">ASA<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Bambu Lab P1S<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Bambu Lab A1 Mini<span class="marquee-dot"></span></span>
+    <span class="marquee-item">3D Modelēšana<span class="marquee-dot"></span></span>
+    <span class="marquee-item">Prototipēšana<span class="marquee-dot"></span></span>
+  </div>
+</div>
+
+<!-- ═══ FEATURES ═══ -->
+<section class="section features-section" id="pakalpojumi">
+  <div class="section-max">
+
+    <div class="sr" style="max-width:520px; margin-bottom:16px;">
+      <div class="tag">Ko mēs piedāvājam</div>
+      <h2 class="section-title">Tehnoloģija,<br>kas <span class="o">darbojas</span></h2>
     </div>
 
-    <!-- Row 1: 3D Print -->
-    <div class="offer-row">
-      <div class="offer-text reveal">
-        <h3>Izcils 3D<br>drukas parks</h3>
-        <p>Mūsu iekārtu klāsts spēj pielāgoties gan maziem, gan apjomīgiem pasūtījumiem, izmantojot modernākos risinājumus nozares tirgū.</p>
-        <ul class="feature-list">
-          <li class="feature-item">
-            <div class="feature-icon"><svg viewBox="0 0 12 12" fill="currentColor"><polyline points="1 6 4.5 9.5 11 2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></div>
-            <span>5× <strong>Bambu Lab A1 Mini</strong> ar dažādiem bed plates</span>
-          </li>
-          <li class="feature-item">
-            <div class="feature-icon"><svg viewBox="0 0 12 12" fill="currentColor"><polyline points="1 6 4.5 9.5 11 2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></div>
-            <span>2× <strong>Bambu Lab P1S</strong> ar dažādiem bed plates</span>
-          </li>
-          <li class="feature-item">
-            <div class="feature-icon"><svg viewBox="0 0 12 12" fill="currentColor"><polyline points="1 6 4.5 9.5 11 2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></div>
-            <span><strong>Neierobežota izvēle:</strong> Visplašākais filamentu tipu un krāsu klāsts</span>
-          </li>
+    <!-- Row 1 -->
+    <div class="feat-row sr">
+      <div class="feat-text">
+        <div class="tag">3D Printēšana</div>
+        <h3>Izcils drukas parks<br>ar Bambu Lab</h3>
+        <p>Mūsu flote nodrošina augstāko precizitāti un ātrumu. Neatkarīgi no pasūtījuma apjoma — rezultāts ir vienādi kvalitatīvs.</p>
+        <ul class="feat-list">
+          <li>5× Bambu Lab A1 Mini ar dažādiem bed plates</li>
+          <li>2× Bambu Lab P1S augstas precizitātes drukai</li>
+          <li>Neierobežota krāsu un materiālu izvēle</li>
         </ul>
       </div>
-      <div class="offer-visual reveal reveal-delay-2">
+      <div class="feat-visual sr sr-d2">
         <img src="https://cdn.shopify.com/s/files/1/0720/6325/4803/files/Bambu_lab_p1s.png?v=1774255829" alt="Bambu Lab P1S">
-        <div class="offer-chip">
-          <div class="offer-chip-dot"></div>
-          <div class="offer-chip-text">Augsta precizitāte</div>
+        <div class="feat-visual-glow"></div>
+        <div class="feat-chip">
+          <div class="feat-chip-pulse"></div>
+          <div class="feat-chip-txt">Augsta precizitāte</div>
         </div>
       </div>
     </div>
 
-    <!-- Row 2: Modelling -->
-    <div class="offer-row flip">
-      <div class="offer-text reveal">
-        <h3>Profesionāla<br>3D modelēšana</h3>
-        <p>Pārvēršam jūsu idejas reālos un ražošanai gatavos modeļos. Piedāvājam pilna cikla risinājumus no pirmās skices līdz gatavam fiziskam prototipam.</p>
-        <ul class="feature-list">
-          <li class="feature-item">
-            <div class="feature-icon"><svg viewBox="0 0 12 12" fill="currentColor"><polyline points="1 6 4.5 9.5 11 2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></div>
-            <span><strong>Tehniskā modelēšana:</strong> Dažādas sarežģītības projekti</span>
-          </li>
-          <li class="feature-item">
-            <div class="feature-icon"><svg viewBox="0 0 12 12" fill="currentColor"><polyline points="1 6 4.5 9.5 11 2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></div>
-            <span><strong>Prototipēšana:</strong> Ātra ideju validācija pirms lielražošanas</span>
-          </li>
-          <li class="feature-item">
-            <div class="feature-icon"><svg viewBox="0 0 12 12" fill="currentColor"><polyline points="1 6 4.5 9.5 11 2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></div>
-            <span><strong>Individuāla pieeja:</strong> Pielāgojam modeļus jūsu vajadzībām</span>
-          </li>
+    <!-- Row 2 -->
+    <div class="feat-row flip sr">
+      <div class="feat-text">
+        <div class="tag">3D Modelēšana</div>
+        <h3>No skices<br>līdz prototipam</h3>
+        <p>Pārvēršam jūsu idejas ražošanai gatavos modeļos. Strādājam ar Fusion 360 un nodrošinām pilna cikla risinājumu.</p>
+        <ul class="feat-list">
+          <li>Tehniskā modelēšana jebkuras sarežģītības projektiem</li>
+          <li>Ātra prototipēšana un ideju validācija</li>
+          <li>Individuāla pieeja un konsultācijas</li>
         </ul>
       </div>
-      <div class="offer-visual reveal reveal-delay-2">
+      <div class="feat-visual sr sr-d2">
         <img src="https://cdn.shopify.com/s/files/1/0720/6325/4803/files/2d8e21ef-0e7c-4e5a-9cf5-88e030df9dc6.jpg?v=1776026564" alt="3D Modelēšana">
-        <div class="offer-chip">
-          <div class="offer-chip-dot"></div>
-          <div class="offer-chip-text">No skices līdz protipam</div>
+        <div class="feat-visual-glow"></div>
+        <div class="feat-chip">
+          <div class="feat-chip-pulse"></div>
+          <div class="feat-chip-txt">Pilna cikla risinājums</div>
         </div>
       </div>
     </div>
+
   </div>
 </section>
 
-<!-- ============================================
-   PROJECTS
-   ============================================ -->
+<!-- ═══ PROJECTS ═══ -->
 <section class="section projects-section" id="projekti">
-  <div class="projects-bg-number">03</div>
-  <div style="max-width:var(--max-w);margin:0 auto;">
-    <div class="section-header reveal">
-      <span class="label">Mūsu darbi</span>
-      <h2 class="section-title">Paveiktie<br><span>projekti</span></h2>
+  <div class="section-max">
+    <div class="sr">
+      <div class="tag">Mūsu darbi</div>
+      <h2 class="section-title">Paveiktie <span class="o">projekti</span></h2>
+      <p class="section-sub">Ieskats nesen realizētajos risinājumos — no prototipiem līdz gataviem izstrādājumiem.</p>
     </div>
 
     <div class="projects-grid">
-      <div class="project-card reveal">
+      <div class="proj-card sr sr-d1">
         <img src="https://cdn.shopify.com/s/files/1/0720/6325/4803/files/WhatsApp_Image_2026-04-12_at_23.31.35.jpg?v=1776026181" alt="Firetex Prototips">
-        <div class="project-info">
-          <div class="project-cat">Prototipēšana</div>
-          <div class="project-title">Firetex<br>Prototips</div>
+        <div class="proj-always">
+          <div class="proj-cat">Prototipēšana</div>
+          <div class="proj-name">Firetex<br>Prototips</div>
         </div>
-        <div class="project-overlay">
-          <div class="project-cat">Prototipēšana</div>
-          <h3 class="project-title">Firetex Prototips</h3>
-          <p class="project-desc">Produkta prototips, izstrādāts speciāli Ķīpsalas izstādei, nodrošinot augstu vizuālo un funkcionālo precizitāti.</p>
+        <div class="proj-hover">
+          <div class="proj-cat">Prototipēšana</div>
+          <div class="proj-name">Firetex Prototips</div>
+          <p class="proj-desc">Produkta prototips izstādei Ķīpsalā — augsta vizuālā un funkcionālā precizitāte.</p>
         </div>
       </div>
 
-      <div class="project-card reveal reveal-delay-1">
+      <div class="proj-card sr sr-d2">
         <img src="https://cdn.shopify.com/s/files/1/0720/6325/4803/files/WhatsApp_Image_2026-04-12_at_23.33.59.jpg?v=1776026156" alt="Touchscreen Korpuss">
-        <div class="project-info">
-          <div class="project-cat">Industriālā druka</div>
-          <div class="project-title">Touchscreen<br>Korpuss</div>
+        <div class="proj-always">
+          <div class="proj-cat">Industriālā druka</div>
+          <div class="proj-name">Touchscreen<br>Korpuss</div>
         </div>
-        <div class="project-overlay">
-          <div class="project-cat">Industriālā druka</div>
-          <h3 class="project-title">Touchscreen Korpuss</h3>
-          <p class="project-desc">Pielāgota, izturīga kaste skārienjūtīgā displeja ievietošanai, paredzēta kārtas numuriņu sistēmai.</p>
+        <div class="proj-hover">
+          <div class="proj-cat">Industriālā druka</div>
+          <div class="proj-name">Touchscreen Korpuss</div>
+          <p class="proj-desc">Pielāgota kaste skārienjūtīgā displeja ievietošanai kārtas numuru sistēmai.</p>
         </div>
       </div>
 
-      <div class="project-card reveal reveal-delay-2">
+      <div class="proj-card sr sr-d3">
         <img src="https://cdn.shopify.com/s/files/1/0720/6325/4803/files/WhatsApp_Image_2026-05-06_at_11.37.44.jpg?v=1778056684" alt="Valsts Ģerbonis">
-        <div class="project-info">
-          <div class="project-cat">Detalizēta modelēšana</div>
-          <div class="project-title">Valsts<br>Ģerbonis</div>
+        <div class="proj-always">
+          <div class="proj-cat">Detalizēta modelēšana</div>
+          <div class="proj-name">Valsts<br>Ģerbonis</div>
         </div>
-        <div class="project-overlay">
-          <div class="project-cat">Detalizēta modelēšana</div>
-          <h3 class="project-title">Valsts Ģerbonis</h3>
-          <p class="project-desc">VARAM ģērboņa projekts ar izcilu reljefa detalizāciju un augstākās kvalitātes druku.</p>
+        <div class="proj-hover">
+          <div class="proj-cat">Detalizēta modelēšana</div>
+          <div class="proj-name">Valsts Ģerbonis</div>
+          <p class="proj-desc">VARAM ģērboņa projekts ar izcilu reljefa detalizāciju un precizitāti.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============================================
-   PRICING
-   ============================================ -->
+<!-- ═══ PRICING ═══ -->
 <section class="section pricing-section" id="cenas">
-  <div style="max-width:var(--max-w);margin:0 auto;">
-    <div class="section-header reveal">
-      <span class="label">Cenas norādītas bez PVN</span>
-      <h2 class="section-title">Pakalpojumu<br><span>cenas</span></h2>
+  <div class="section-max">
+    <div class="pricing-header sr">
+      <div class="tag" style="justify-content:center;">Cenas bez PVN</div>
+      <h2 class="section-title">Godīgas <span class="o">cenas</span></h2>
+      <p class="section-sub">Caurspīdīga cenu politika — ziniet izmaksas pirms sākat.</p>
     </div>
 
     <div class="pricing-grid">
 
-      <!-- Card 1 -->
-      <div class="price-card reveal">
-        <div class="price-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      <div class="price-card sr sr-d1">
+        <div class="price-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
         </div>
-        <div class="price-name">3D MODELĒŠANA</div>
-        <p class="price-desc">Sarežģītu detaļu, tehnisko zīmējumu un dizaina izstrāde drukai.</p>
+        <div class="price-name">3D Modelēšana</div>
+        <p class="price-desc">Tehniskā modelēšana un failu sagatavošana jūsu drukas projektam.</p>
         <hr class="price-divider">
-        <div class="price-amount">30€</div>
-        <div class="price-note">Par stundu · bez PVN</div>
-        <ul class="price-features">
-          <li class="price-feature"><svg class="price-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Tehniskā precizitāte</li>
-          <li class="price-feature"><svg class="price-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Individuāla pieeja</li>
-          <li class="price-feature"><svg class="price-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Failu sagatavošana drukai</li>
+        <div class="price-val">30€</div>
+        <div class="price-per">stundā · bez PVN</div>
+        <ul class="price-feats">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Tehniskā precizitāte</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Individuāla pieeja</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> STL/STEP failu sagatavošana</li>
         </ul>
-        <a href="#pieteikums" class="btn-price">Pieteikt projektu</a>
+        <a href="#pieteikums" class="btn-price-outline">Pieteikt projektu</a>
       </div>
 
-      <!-- Card 2 FEATURED -->
-      <div class="price-card featured reveal reveal-delay-1">
-        <div class="price-featured-badge">Populārākais</div>
-        <div class="price-icon">
+      <div class="price-card hot sr sr-d2">
+        <div class="price-badge">Populārākais</div>
+        <div class="price-icon-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         </div>
-        <div class="price-name">3D PRINTĒŠANA</div>
-        <p class="price-desc">FDM druka ar Bambu Lab printeriem. Augsta precizitāte, jebkura krāsa.</p>
+        <div class="price-name">3D Printēšana</div>
+        <p class="price-desc">FDM druka ar Bambu Lab P1S un A1 Mini — augsta precizitāte, jebkura krāsa.</p>
         <hr class="price-divider">
-        <div class="price-amount">3€</div>
-        <div class="price-note">Stundā · min. pasūtījums 10€</div>
-        <ul class="price-features">
-          <li class="price-feature"><svg class="price-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Bambu Lab P1S & A1 Mini</li>
-          <li class="price-feature"><svg class="price-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Neierobežota krāsu izvēle</li>
-          <li class="price-feature"><svg class="price-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Ātra izpilde</li>
+        <div class="price-val">3€</div>
+        <div class="price-per">stundā · min. 10€ · bez PVN</div>
+        <ul class="price-feats">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Bambu Lab P1S & A1 Mini</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Neierobežota krāsu izvēle</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Ātra izpilde</li>
         </ul>
-        <a href="#pieteikums" class="btn-price primary">Pieteikt projektu</a>
+        <a href="#pieteikums" class="btn-price-fill">Pieteikt projektu</a>
       </div>
 
-      <!-- Card 3 -->
-      <div class="price-card reveal reveal-delay-2">
-        <div class="price-icon">
+      <div class="price-card sr sr-d3">
+        <div class="price-icon-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
         </div>
-        <div class="price-name">PROTOTIPĒŠANA</div>
-        <p class="price-desc">Pilna cikla produktu izstrāde no idejas līdz taustāmam modelim.</p>
+        <div class="price-name">Prototipēšana</div>
+        <p class="price-desc">Pilna cikla izstrāde no idejas līdz fiziskam modelim biznesa vajadzībām.</p>
         <hr class="price-divider">
-        <div class="price-amount custom">Pēc pieprasījuma</div>
-        <div class="price-note">Sazinies — aprēķināsim kopā</div>
-        <ul class="price-features">
-          <li class="price-feature"><svg class="price-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Sērijveida testēšana</li>
-          <li class="price-feature"><svg class="price-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Materiālu validācija</li>
-          <li class="price-feature"><svg class="price-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Konsultācijas un atbalsts</li>
+        <div class="price-val custom-val">Pēc pieprasījuma</div>
+        <div class="price-per">aprēķinām kopā</div>
+        <ul class="price-feats">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Sērijveida testēšana</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Materiālu validācija</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Konsultācijas un atbalsts</li>
         </ul>
-        <a href="#pieteikums" class="btn-price">Sazināties</a>
+        <a href="#pieteikums" class="btn-price-outline">Sazināties</a>
       </div>
 
     </div>
   </div>
 </section>
 
-<!-- ============================================
-   CONTACT / FORM
-   ============================================ -->
+<!-- ═══ CONTACT ═══ -->
 <section class="section contact-section" id="pieteikums">
-  <div class="contact-inner">
+  <div class="section-max">
+    <div class="contact-inner">
 
-    <div class="contact-info reveal">
-      <h2>Pieteikt<br><span>projektu</span></h2>
-      <p>Aizpildiet formu ar jūsu projekta specifikācijām. Mēs atsauksimies 24 stundu laikā ar cenas aprēķinu.</p>
-      <div class="contact-methods">
-        <a href="tel:+37124424434" class="contact-method">
-          <div class="contact-method-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          </div>
-          <div>
-            <div class="contact-method-label">Telefons</div>
-            <div class="contact-method-value">+371 24 424 434</div>
-          </div>
-        </a>
-        <a href="mailto:sales@bratus.lv" class="contact-method">
-          <div class="contact-method-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          </div>
-          <div>
-            <div class="contact-method-label">E-pasts</div>
-            <div class="contact-method-value">sales@bratus.lv</div>
-          </div>
-        </a>
-        <a href="https://bratus.lv/pages/3d-pakalpojumi" target="_blank" class="contact-method">
-          <div class="contact-method-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          </div>
-          <div>
-            <div class="contact-method-label">Vietne</div>
-            <div class="contact-method-value">bratus.lv/3d-pakalpojumi</div>
-          </div>
-        </a>
+      <div class="contact-left sr">
+        <div class="tag">Pieteikt projektu</div>
+        <h2>Sāciet savu<br><em>3D projektu</em><br>šodien</h2>
+        <p>Aizpildiet formu — mēs atsauksimies 24 stundu laikā ar cenas aprēķinu un tālākajiem soļiem.</p>
+        <div class="contact-meta">
+          <a href="tel:+37124424434" class="cmeta">
+            <div class="cmeta-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A2 2 0 0 1 2.11 4h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81A2 2 0 0 1 7.36 10.7L6.09 11.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+            <div><div class="cmeta-label">Telefons</div><div class="cmeta-val">+371 24 424 434</div></div>
+          </a>
+          <a href="mailto:sales@bratus.lv" class="cmeta">
+            <div class="cmeta-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+            <div><div class="cmeta-label">E-pasts</div><div class="cmeta-val">sales@bratus.lv</div></div>
+          </a>
+          <a href="https://bratus.lv/pages/3d-pakalpojumi" target="_blank" class="cmeta">
+            <div class="cmeta-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+            <div><div class="cmeta-label">Pilnā vietne</div><div class="cmeta-val">bratus.lv</div></div>
+          </a>
+        </div>
       </div>
-    </div>
 
-    <div class="contact-form-wrap reveal reveal-delay-1">
-      <div class="form-status" id="form-status"></div>
+      <div class="form-box sr sr-d2">
+        <div class="form-status" id="fs"></div>
 
-      <form id="contact-form">
-        <input type="hidden" id="hidden-filament" name="filament_type" value="PLA">
-        <input type="hidden" id="hidden-color" name="filament_color" value="Melna">
+        <form id="cf">
+          <input type="hidden" id="hfil" value="PLA">
+          <input type="hidden" id="hcol" value="Melna">
 
-        <!-- Step 1: Filament -->
-        <div class="form-group">
-          <span class="form-preset-title">01 — Filamenta tips</span>
-          <div class="pill-grid">
-            <input type="radio" name="fil" id="f-pla" value="PLA" checked onchange="document.getElementById('hidden-filament').value=this.value">
-            <label for="f-pla">PLA</label>
-            <input type="radio" name="fil" id="f-petg" value="PETG" onchange="document.getElementById('hidden-filament').value=this.value">
-            <label for="f-petg">PETG</label>
-            <input type="radio" name="fil" id="f-abs" value="ABS" onchange="document.getElementById('hidden-filament').value=this.value">
-            <label for="f-abs">ABS</label>
-            <input type="radio" name="fil" id="f-asa" value="ASA" onchange="document.getElementById('hidden-filament').value=this.value">
-            <label for="f-asa">ASA</label>
-            <input type="radio" name="fil" id="f-tpu" value="TPU" onchange="document.getElementById('hidden-filament').value=this.value">
-            <label for="f-tpu">TPU</label>
-            <input type="radio" name="fil" id="f-pc" value="PC" onchange="document.getElementById('hidden-filament').value=this.value">
-            <label for="f-pc">PC</label>
-            <input type="radio" name="fil" id="f-pa" value="Nylon" onchange="document.getElementById('hidden-filament').value=this.value">
-            <label for="f-pa">Nylon</label>
-            <input type="radio" name="fil" id="f-cf" value="CF/GF" onchange="document.getElementById('hidden-filament').value=this.value">
-            <label for="f-cf">CF/GF</label>
-            <input type="radio" name="fil" id="f-other" value="Nezinu" onchange="document.getElementById('hidden-filament').value=this.value">
-            <label for="f-other">Nezinu</label>
+          <div class="fg">
+            <span class="form-step-label">01 — Filamenta tips</span>
+            <div class="pill-row">
+              <input type="radio" name="fil" id="fpla" value="PLA" checked onchange="document.getElementById('hfil').value=this.value"><label for="fpla">PLA</label>
+              <input type="radio" name="fil" id="fpetg" value="PETG" onchange="document.getElementById('hfil').value=this.value"><label for="fpetg">PETG</label>
+              <input type="radio" name="fil" id="fabs" value="ABS" onchange="document.getElementById('hfil').value=this.value"><label for="fabs">ABS</label>
+              <input type="radio" name="fil" id="fasa" value="ASA" onchange="document.getElementById('hfil').value=this.value"><label for="fasa">ASA</label>
+              <input type="radio" name="fil" id="ftpu" value="TPU" onchange="document.getElementById('hfil').value=this.value"><label for="ftpu">TPU</label>
+              <input type="radio" name="fil" id="fpc" value="PC" onchange="document.getElementById('hfil').value=this.value"><label for="fpc">PC</label>
+              <input type="radio" name="fil" id="fpa" value="Nylon" onchange="document.getElementById('hfil').value=this.value"><label for="fpa">Nylon</label>
+              <input type="radio" name="fil" id="fcf" value="CF/GF" onchange="document.getElementById('hfil').value=this.value"><label for="fcf">CF/GF</label>
+              <input type="radio" name="fil" id="foth" value="Nezinu" onchange="document.getElementById('hfil').value=this.value"><label for="foth">Nezinu</label>
+            </div>
           </div>
-        </div>
 
-        <!-- Step 2: Color -->
-        <div class="form-group">
-          <span class="form-preset-title">02 — Krāsa</span>
-          <div class="pill-grid">
-            <input type="radio" name="col" id="c-bk" value="Melna" checked onchange="document.getElementById('hidden-color').value=this.value">
-            <label for="c-bk"><span class="color-dot-sm" style="background:#1a1a1a;"></span>Melna</label>
-            <input type="radio" name="col" id="c-wh" value="Balta" onchange="document.getElementById('hidden-color').value=this.value">
-            <label for="c-wh"><span class="color-dot-sm" style="background:#f0f0f0;"></span>Balta</label>
-            <input type="radio" name="col" id="c-gr" value="Pelēka" onchange="document.getElementById('hidden-color').value=this.value">
-            <label for="c-gr"><span class="color-dot-sm" style="background:#888;"></span>Pelēka</label>
-            <input type="radio" name="col" id="c-rd" value="Sarkana" onchange="document.getElementById('hidden-color').value=this.value">
-            <label for="c-rd"><span class="color-dot-sm" style="background:#d32f2f;"></span>Sarkana</label>
-            <input type="radio" name="col" id="c-bl" value="Zila" onchange="document.getElementById('hidden-color').value=this.value">
-            <label for="c-bl"><span class="color-dot-sm" style="background:#1976d2;"></span>Zila</label>
-            <input type="radio" name="col" id="c-gn" value="Zaļa" onchange="document.getElementById('hidden-color').value=this.value">
-            <label for="c-gn"><span class="color-dot-sm" style="background:#388e3c;"></span>Zaļa</label>
-            <input type="radio" name="col" id="c-yw" value="Dzeltena" onchange="document.getElementById('hidden-color').value=this.value">
-            <label for="c-yw"><span class="color-dot-sm" style="background:#fbc02d;"></span>Dzeltena</label>
-            <input type="radio" name="col" id="c-or" value="Oranža" onchange="document.getElementById('hidden-color').value=this.value">
-            <label for="c-or"><span class="color-dot-sm" style="background:#e67e22;"></span>Oranža</label>
-            <input type="radio" name="col" id="c-ot" value="Cita" onchange="document.getElementById('hidden-color').value=this.value">
-            <label for="c-ot"><span class="color-dot-sm" style="background:linear-gradient(135deg,#f00,#0f0,#00f);"></span>Cita</label>
+          <div class="fg">
+            <span class="form-step-label">02 — Krāsa</span>
+            <div class="pill-row">
+              <input type="radio" name="col" id="cbk" value="Melna" checked onchange="document.getElementById('hcol').value=this.value"><label for="cbk"><span class="color-dot" style="background:#1a1a1a;"></span>Melna</label>
+              <input type="radio" name="col" id="cwh" value="Balta" onchange="document.getElementById('hcol').value=this.value"><label for="cwh"><span class="color-dot" style="background:#eee;"></span>Balta</label>
+              <input type="radio" name="col" id="cgr" value="Pelēka" onchange="document.getElementById('hcol').value=this.value"><label for="cgr"><span class="color-dot" style="background:#777;"></span>Pelēka</label>
+              <input type="radio" name="col" id="crd" value="Sarkana" onchange="document.getElementById('hcol').value=this.value"><label for="crd"><span class="color-dot" style="background:#d32f2f;"></span>Sarkana</label>
+              <input type="radio" name="col" id="cbl" value="Zila" onchange="document.getElementById('hcol').value=this.value"><label for="cbl"><span class="color-dot" style="background:#1976d2;"></span>Zila</label>
+              <input type="radio" name="col" id="cgn" value="Zaļa" onchange="document.getElementById('hcol').value=this.value"><label for="cgn"><span class="color-dot" style="background:#388e3c;"></span>Zaļa</label>
+              <input type="radio" name="col" id="cor" value="Oranža" onchange="document.getElementById('hcol').value=this.value"><label for="cor"><span class="color-dot" style="background:#f97316;"></span>Oranža</label>
+              <input type="radio" name="col" id="cot" value="Cita" onchange="document.getElementById('hcol').value=this.value"><label for="cot"><span class="color-dot" style="background:linear-gradient(135deg,#f00,#0f0,#00f);"></span>Cita</label>
+            </div>
           </div>
-        </div>
 
-        <hr class="form-divider">
+          <hr class="form-sep">
+          <span class="form-step-label" style="display:block;margin-bottom:16px;">03 — Jūsu kontakti</span>
 
-        <!-- Step 3: Contact details -->
-        <span class="form-preset-title">03 — Kontaktinformācija</span>
-
-        <div class="form-row" style="margin-top:14px;">
-          <div class="form-group">
-            <label class="form-label" for="inp-name">Vārds, uzvārds *</label>
-            <input class="form-input" type="text" id="inp-name" placeholder="Jānis Bērziņš" required>
+          <div class="f2">
+            <div class="fg">
+              <label class="form-label" for="iname">Vārds, uzvārds *</label>
+              <input class="finput" type="text" id="iname" placeholder="Jānis Bērziņš" required>
+            </div>
+            <div class="fg">
+              <label class="form-label" for="iemail">E-pasts *</label>
+              <input class="finput" type="email" id="iemail" placeholder="janis@epasts.lv" required>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="inp-email">E-pasts *</label>
-            <input class="form-input" type="email" id="inp-email" placeholder="janis@epasts.lv" required>
+
+          <div class="fg">
+            <label class="form-label" for="iphone">Tālrunis</label>
+            <input class="finput" type="tel" id="iphone" placeholder="+371 20 000 000">
           </div>
-        </div>
 
-        <div class="form-group">
-          <label class="form-label" for="inp-phone">Tālrunis</label>
-          <input class="form-input" type="tel" id="inp-phone" placeholder="+371 20 000 000">
-        </div>
+          <div class="fg">
+            <label class="form-label" for="imsg">Projekta apraksts + faila saite (ja ir) *</label>
+            <textarea class="ftextarea" id="imsg" placeholder="Aprakstiet projektu. Ja jums ir STL/STEP fails, pievienojiet saiti uz Google Drive..." required></textarea>
+          </div>
 
-        <div class="form-group">
-          <label class="form-label" for="inp-msg">Projekta apraksts + faila saite (ja ir)</label>
-          <textarea class="form-textarea" id="inp-msg" placeholder="Aprakstiet savu projektu. Ja jums ir STL/STEP fails, pievienojiet saiti uz Google Drive..." required></textarea>
-        </div>
+          <button type="submit" class="btn-submit" id="sbtn">
+            Nosūtīt pieprasījumu
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </form>
+      </div>
 
-        <button type="submit" class="btn-submit" id="submit-btn">
-          Nosūtīt pieprasījumu
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </button>
-      </form>
     </div>
   </div>
 </section>
 
-<!-- ============================================
-   CTA BANNER
-   ============================================ -->
-<div class="cta-banner">
-  <div class="cta-banner-inner">
-    <div class="cta-banner-text reveal">
-      <h2>Skatīt vairāk<br><span>bratus.lv</span></h2>
-      <p>Mūsu pilnā mājaslapa piedāvā arī lāzergravēšanas pakalpojumus, CNC frēzes, marķēšanas iekārtas un daudz ko citu.</p>
-    </div>
-    <div class="cta-banner-btns reveal reveal-delay-2">
-      <a href="https://bratus.lv/pages/3d-pakalpojumi" target="_blank" class="btn-primary">
-        Atvērt bratus.lv
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
-      <a href="https://bratus.lv/collections/3d-filamenti" target="_blank" class="btn-ghost">3D Filamenti →</a>
-    </div>
+<!-- ═══ CTA BAND ═══ -->
+<div class="cta-band">
+  <h2 class="sr">Vēlaties uzzināt vairāk<br>par <span>BRATUS</span>?</h2>
+  <p class="sr sr-d1">Mūsu pilnā mājaslapa piedāvā arī lāzergravēšanas pakalpojumus, CNC frēzes, marķēšanas iekārtas un daudz ko citu.</p>
+  <div class="cta-band-btns sr sr-d2">
+    <a href="https://bratus.lv/pages/3d-pakalpojumi" target="_blank" class="btn-primary-lg">
+      Atvērt bratus.lv
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+    <a href="https://bratus.lv/collections/3d-filamenti" target="_blank" class="btn-secondary-lg">3D Filamenti ↗</a>
   </div>
 </div>
 
-<!-- ============================================
-   FOOTER
-   ============================================ -->
+<!-- ═══ FOOTER ═══ -->
 <footer>
-  <div class="footer-inner">
-    <div class="footer-logo">
+  <div class="footer-top">
+    <div class="footer-brand">
       <img src="https://cdn.shopify.com/s/files/1/0720/6325/4803/files/BRATUS_BALTS_LOGO_PNG_31ca2710-d923-44ca-ab97-7d4706e0ce6d.png?v=1764954367" alt="Bratus">
-      <p class="footer-tagline">Profesionāla 3D printēšana un modelēšana Latvijā.</p>
+      <p>Profesionāla 3D printēšana un modelēšana Latvijā, izmantojot modernākās Bambu Lab tehnoloģijas.</p>
     </div>
     <div class="footer-col">
-      <h4>Pakalpojumi</h4>
+      <h5>Pakalpojumi</h5>
       <a href="#pakalpojumi">3D Printēšana</a>
       <a href="#pakalpojumi">3D Modelēšana</a>
       <a href="#pakalpojumi">Prototipēšana</a>
       <a href="https://bratus.lv/collections/3d-filamenti" target="_blank">3D Filamenti</a>
     </div>
     <div class="footer-col">
-      <h4>Kontakti</h4>
+      <h5>Kontakti</h5>
       <a href="tel:+37124424434">+371 24 424 434</a>
       <a href="tel:+37126325307">+371 26 325 307</a>
       <a href="mailto:sales@bratus.lv">sales@bratus.lv</a>
     </div>
     <div class="footer-col">
-      <h4>Juridiskā info</h4>
+      <h5>Juridiskā info</h5>
       <p>SIA Bratus</p>
       <p>Reģ. nr. 40203628316</p>
-      <p>Ķekavas nov., Ķekava,<br>Dārznieku iela 42</p>
+      <p>Dārznieku iela 42,<br>Ķekava, Ķekavas nov.</p>
     </div>
   </div>
   <div class="footer-bottom">
     <p>© <span id="yr"></span> SIA Bratus. Visas tiesības aizsargātas.</p>
-    <div class="footer-domain">Lapa: <span>3dpakalpojumi.lv</span> → bratus.lv</div>
+    <div class="footer-bottom-right">Šī lapa: <span>3dpakalpojumi.lv</span> → bratus.lv</div>
   </div>
 </footer>
 
-<!-- ============================================
-   JS
-   ============================================ -->
 <script>
-/* Year */
+// Year
 document.getElementById('yr').textContent = new Date().getFullYear();
 
-/* Scroll reveal */
-const reveals = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
-}, { threshold: 0.12 });
-reveals.forEach(el => observer.observe(el));
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.sr').forEach(el => obs.observe(el));
 
-/* Form submit → send to bratus.lv shopforms endpoint */
-document.getElementById('contact-form').addEventListener('submit', async function(e) {
+// Form
+document.getElementById('cf').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const status = document.getElementById('form-status');
-  const btn = document.getElementById('submit-btn');
+  const fs = document.getElementById('fs');
+  const btn = document.getElementById('sbtn');
+  const fil = document.getElementById('hfil').value;
+  const col = document.getElementById('hcol').value;
+  const name = document.getElementById('iname').value;
+  const email = document.getElementById('iemail').value;
+  const phone = document.getElementById('iphone').value;
+  const msg = document.getElementById('imsg').value;
 
-  const filament = document.getElementById('hidden-filament').value;
-  const color    = document.getElementById('hidden-color').value;
-  const name     = document.getElementById('inp-name').value;
-  const email    = document.getElementById('inp-email').value;
-  const phone    = document.getElementById('inp-phone').value;
-  const msg      = document.getElementById('inp-msg').value;
-
-  const fullMessage = `Avots: 3dpakalpojumi.lv\nFilaments: ${filament}\nKrāsa: ${color}\nTālrunis: ${phone || 'nav norādīts'}\n\nProjekts:\n${msg}`;
+  const full = `Avots: 3dpakalpojumi.lv\nFilaments: ${fil}\nKrāsa: ${col}\nTālrunis: ${phone || 'nav norādīts'}\n\nProjekts:\n${msg}`;
 
   btn.disabled = true;
-  btn.innerHTML = 'Sūta... <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/></svg>';
+  btn.textContent = 'Sūta...';
 
   try {
-    const res = await fetch('https://shopforms.vercel.app/api/send-email', {
+    const r = await fetch('https://shopforms.vercel.app/api/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, message: fullMessage, form_identifier: 'manufacturing' })
+      body: JSON.stringify({ name, email, message: full, form_identifier: 'manufacturing' })
     });
-
-    if (res.ok) {
-      status.className = 'form-status success';
-      status.style.display = 'flex';
-      status.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="20 6 9 17 4 12"/></svg> Paldies! Pieteikums veiksmīgi nosūtīts. Sazināsimies 24h laikā.';
+    if (r.ok) {
+      fs.className = 'form-status ok';
+      fs.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Paldies! Pieteikums nosūtīts. Atbildēsim 24h laikā.';
       this.reset();
-      document.getElementById('hidden-filament').value = 'PLA';
-      document.getElementById('hidden-color').value = 'Melna';
-    } else {
-      throw new Error('bad response');
-    }
+    } else { throw new Error(); }
   } catch {
-    status.className = 'form-status error';
-    status.style.display = 'flex';
-    status.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg> Kļūda nosūtot. Sazinieties tieši: sales@bratus.lv';
+    fs.className = 'form-status err';
+    fs.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg> Kļūda. Rakstiet tieši: sales@bratus.lv';
   }
-
   btn.disabled = false;
-  btn.innerHTML = 'Nosūtīt pieprasījumu <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+  btn.innerHTML = 'Nosūtīt pieprasījumu <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
 });
 
-/* Smooth anchor scroll */
+// Smooth scroll
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
-    const target = document.querySelector(a.getAttribute('href'));
-    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
   });
 });
 </script>
