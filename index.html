@@ -40,10 +40,26 @@ nav{
   border-bottom:1px solid var(--border);
   gap:12px;
 }
-.nav-logo{display:flex;align-items:center;gap:8px;flex-shrink:0;min-width:0}
+.nav-logo{display:flex;align-items:center;gap:10px;flex-shrink:0;min-width:0}
 .nav-logo img{height:26px;width:auto;flex-shrink:0}
-.nav-logo-text{font-family:'Outfit',sans-serif;font-weight:800;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nav-logo-text span{color:var(--orange)}
+
+/* Uzlabots LOGO stils */
+.nav-logo-text{
+  font-family:'Outfit',sans-serif;
+  font-weight:900;
+  font-size:1.15rem;
+  letter-spacing:-0.02em;
+  background:linear-gradient(180deg,#ffffff 0%,#a0a8b8 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  white-space:nowrap;
+}
+.nav-logo-text span{
+  background:linear-gradient(90deg,var(--orange),var(--violet));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
 .nav-links{display:flex;align-items:center;gap:24px;list-style:none;flex-shrink:0}
 .nav-links a{font-size:0.85rem;color:var(--off);transition:color .2s;white-space:nowrap}
 .nav-links a:hover{color:#fff}
@@ -52,14 +68,40 @@ nav{
 .btn-outline-sm:hover{border-color:rgba(255,255,255,0.3);color:#fff}
 .btn-primary-sm{padding:8px 16px;background:var(--orange);border-radius:8px;font-size:0.8rem;font-weight:600;color:#000;transition:all .2s;white-space:nowrap}
 .btn-primary-sm:hover{background:#ea6a00}
+.mobile-menu-btn{display:none;}
 
+/* Menu responsive rules */
 @media(max-width:860px){
-  .nav-links{display:none}
+  .mobile-menu-btn{
+    display:flex;align-items:center;justify-content:center;
+    background:none;border:none;color:#fff;cursor:pointer;padding:4px;
+  }
+  .nav-links{
+    position:absolute;top:60px;left:0;right:0;
+    background:rgba(8,9,12,0.98);
+    backdrop-filter:blur(20px);
+    flex-direction:column;align-items:center;
+    padding:0;gap:0;
+    max-height:0;overflow:hidden;
+    transition:all .35s var(--ease);
+    border-bottom:0 solid var(--border);
+  }
+  .nav-links.open{
+    max-height:300px;
+    padding:16px 0 24px;
+    border-bottom-width:1px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.5);
+  }
+  .nav-links li{width:100%;text-align:center}
+  .nav-links a{display:block;padding:12px;font-size:1.1rem;font-weight:500;}
 }
+
 @media(max-width:520px){
   nav{height:56px;padding:0 14px}
-  .nav-logo-text{display:none}
+  .nav-links{top:56px;}
+  .nav-logo-text{font-size:1rem;}
   .btn-outline-sm{display:none}
+  .cta-desktop{display:none} /* Slēpjam lielo pogu, lai vieta logo un menu uz mobilā */
   .btn-primary-sm{padding:7px 12px;font-size:0.78rem}
 }
 
@@ -359,7 +401,24 @@ footer{background:#050608;border-top:1px solid var(--border);padding:48px clamp(
 .footer-bottom-right span{color:rgba(249,115,22,.55)}
 
 @media(max-width:860px){.footer-top{grid-template-columns:1fr 1fr;gap:28px}}
-@media(max-width:520px){.footer-top{grid-template-columns:1fr}.footer-bottom{flex-direction:column;text-align:center}}
+/* Footer komapktums un restrukturizācija mobilajās ierīcēs */
+@media(max-width:520px){
+  .footer-top{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-template-areas:
+      "brand brand"
+      "pakalpojumi kontakti"
+      "pakalpojumi juridiska";
+    gap:24px 16px;
+  }
+  .ft-brand { grid-area: brand; }
+  .ft-pakalpojumi { grid-area: pakalpojumi; }
+  .ft-kontakti { grid-area: kontakti; }
+  .ft-juridiska { grid-area: juridiska; }
+
+  .footer-bottom{flex-direction:column;text-align:center}
+}
 
 /* ── SCROLL REVEAL ── */
 .sr{opacity:0;transform:translateY(28px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
@@ -376,13 +435,12 @@ footer{background:#050608;border-top:1px solid var(--border);padding:48px clamp(
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <div class="nav-logo">
     <img src="https://cdn.shopify.com/s/files/1/0720/6325/4803/files/BRATUS_BALTS_LOGO_PNG_31ca2710-d923-44ca-ab97-7d4706e0ce6d.png?v=1764954367" alt="Bratus">
     <div class="nav-logo-text">3D<span>pakalpojumi</span>.lv</div>
   </div>
-  <ul class="nav-links">
+  <ul class="nav-links" id="nav-links">
     <li><a href="#pakalpojumi">Pakalpojumi</a></li>
     <li><a href="#projekti">Projekti</a></li>
     <li><a href="#cenas">Cenas</a></li>
@@ -390,11 +448,13 @@ footer{background:#050608;border-top:1px solid var(--border);padding:48px clamp(
   </ul>
   <div class="nav-cta">
     <a href="https://bratus.lv" target="_blank" class="btn-outline-sm">bratus.lv</a>
-    <a href="#pieteikums" class="btn-primary-sm">Pieteikt →</a>
+    <a href="#pieteikums" class="btn-primary-sm cta-desktop">Pieteikt →</a>
+    <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Izvēlne">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+    </button>
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-badge">
@@ -421,7 +481,6 @@ footer{background:#050608;border-top:1px solid var(--border);padding:48px clamp(
   </div>
 </section>
 
-<!-- STATS -->
 <div class="stats-bar">
   <div class="stats-inner">
     <div class="stat-item sr"><div class="stat-num">7+</div><div class="stat-label">Bambu Lab printeri</div></div>
@@ -431,7 +490,6 @@ footer{background:#050608;border-top:1px solid var(--border);padding:48px clamp(
   </div>
 </div>
 
-<!-- MARQUEE -->
 <div class="marquee-wrap" aria-hidden="true">
   <div class="marquee-track">
     <span class="marquee-item">PLA<span class="marquee-dot"></span></span>
@@ -461,7 +519,6 @@ footer{background:#050608;border-top:1px solid var(--border);padding:48px clamp(
   </div>
 </div>
 
-<!-- FEATURES -->
 <section class="section features-section" id="pakalpojumi">
   <div class="section-max">
     <div class="sr" style="max-width:500px;margin-bottom:8px">
@@ -505,7 +562,6 @@ footer{background:#050608;border-top:1px solid var(--border);padding:48px clamp(
   </div>
 </section>
 
-<!-- PROJECTS -->
 <section class="section projects-section" id="projekti">
   <div class="section-max">
     <div class="sr">
@@ -533,7 +589,6 @@ footer{background:#050608;border-top:1px solid var(--border);padding:48px clamp(
   </div>
 </section>
 
-<!-- PROJECT MODAL -->
 <div class="proj-modal-overlay" id="proj-modal-overlay">
   <div class="proj-modal" id="proj-modal">
     <button class="proj-modal-close" id="proj-modal-close">
@@ -548,7 +603,6 @@ footer{background:#050608;border-top:1px solid var(--border);padding:48px clamp(
   </div>
 </div>
 
-<!-- PRICING -->
 <section class="section pricing-section" id="cenas">
   <div class="section-max">
     <div class="pricing-header sr">
@@ -604,7 +658,6 @@ footer{background:#050608;border-top:1px solid var(--border);padding:48px clamp(
   </div>
 </section>
 
-<!-- CONTACT -->
 <section class="section contact-section" id="pieteikums">
   <div class="section-max">
     <div class="contact-inner">
@@ -677,7 +730,6 @@ footer{background:#050608;border-top:1px solid var(--border);padding:48px clamp(
   </div>
 </section>
 
-<!-- CTA BAND -->
 <div class="cta-band">
   <h2 class="sr">Vēlaties uzzināt vairāk<br>par <span>BRATUS</span>?</h2>
   <p class="sr sr-d1">Mūsu pilnā mājaslapa piedāvā arī lāzergravēšanas pakalpojumus, CNC frēzes, marķēšanas iekārtas un daudz ko citu.</p>
@@ -690,27 +742,26 @@ footer{background:#050608;border-top:1px solid var(--border);padding:48px clamp(
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <div class="footer-top">
-    <div class="footer-brand">
+    <div class="footer-brand ft-brand">
       <img src="https://cdn.shopify.com/s/files/1/0720/6325/4803/files/BRATUS_BALTS_LOGO_PNG_31ca2710-d923-44ca-ab97-7d4706e0ce6d.png?v=1764954367" alt="Bratus">
       <p>Profesionāla 3D printēšana un modelēšana Latvijā, izmantojot modernākās Bambu Lab tehnoloģijas.</p>
     </div>
-    <div class="footer-col">
+    <div class="footer-col ft-pakalpojumi">
       <h5>Pakalpojumi</h5>
       <a href="#pakalpojumi">3D Printēšana</a>
       <a href="#pakalpojumi">3D Modelēšana</a>
       <a href="#pakalpojumi">Prototipēšana</a>
       <a href="https://bratus.lv/collections/3d-filamenti" target="_blank">3D Filamenti</a>
     </div>
-    <div class="footer-col">
+    <div class="footer-col ft-kontakti">
       <h5>Kontakti</h5>
       <a href="tel:+37124424434">+371 24 424 434</a>
       <a href="tel:+37126325307">+371 26 325 307</a>
       <a href="mailto:sales@bratus.lv">sales@bratus.lv</a>
     </div>
-    <div class="footer-col">
+    <div class="footer-col ft-juridiska">
       <h5>Juridiskā info</h5>
       <p>SIA Bratus</p>
       <p>Reģ. nr. 40203628316</p>
@@ -732,6 +783,21 @@ const obs = new IntersectionObserver(entries => {
   entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target)} });
 },{threshold:0.1});
 document.querySelectorAll('.sr').forEach(el=>obs.observe(el));
+
+// Mobile Menu Toggle
+const menuBtn = document.getElementById('mobile-menu-btn');
+const navLinks = document.getElementById('nav-links');
+
+menuBtn.addEventListener('click', () => {
+  navLinks.classList.toggle('open');
+});
+
+// Aizver menu uzspiežot uz linka
+navLinks.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+  });
+});
 
 // Project modal
 const overlay = document.getElementById('proj-modal-overlay');
