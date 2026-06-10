@@ -34,6 +34,7 @@ ul { list-style: none; }
   --surface: #f5ede2;
   --max:     1200px;
   --ease:    cubic-bezier(.22,1,.36,1);
+  --gutter:  clamp(20px, 5vw, 72px);
 }
 
 /* ── NAV ── */
@@ -146,6 +147,15 @@ ul { list-style: none; }
   align-items: flex-start; justify-content: flex-end;
   padding: 0 clamp(20px, 6vw, 72px) clamp(60px, 8vw, 100px);
   overflow: hidden;
+}
+@media (max-width: 860px) {
+  .hero {
+    min-height: 100svh;
+    justify-content: center;
+    padding-top: 80px;
+    padding-bottom: clamp(40px, 8vw, 70px);
+  }
+  .hero-scroll { display: none; }
 }
 .hero-bg {
   position: absolute; inset: 0; z-index: 0;
@@ -267,6 +277,7 @@ ul { list-style: none; }
 @media (max-width: 520px) {
   .hero-btns { flex-direction: column; }
   .btn-hero-primary, .btn-hero-ghost { justify-content: center; }
+  .btn-hero-ghost .hero-ext-arrow { display: none; }
 }
 
 /* ── STATS BAR ── */
@@ -288,7 +299,7 @@ ul { list-style: none; }
 .stat-item:last-child { border-right: none; }
 .stat-num {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: clamp(2.2rem, 4vw, 3rem);
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
   font-weight: 300;
   letter-spacing: -0.04em;
   color: var(--ink);
@@ -344,8 +355,11 @@ ul { list-style: none; }
 
 /* ── SECTION BASE ── */
 .section {
-  padding: clamp(72px, 9vw, 120px) clamp(20px, 5vw, 60px);
+  padding: clamp(56px, 9vw, 120px) clamp(20px, 5vw, 60px);
   position: relative;
+}
+@media (max-width: 860px) {
+  .section { padding-top: 48px; padding-bottom: 48px; }
 }
 .section-max { max-width: var(--max); margin: 0 auto; }
 .eyebrow {
@@ -389,6 +403,9 @@ ul { list-style: none; }
 
 /* ── FEATURES ── */
 .feat-rows { margin-top: 64px; }
+@media (max-width: 860px) {
+  .feat-rows { margin-top: 36px; }
+}
 .feat-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -488,6 +505,9 @@ ul { list-style: none; }
   grid-template-columns: repeat(3, 1fr);
   gap: 2px;
   margin-top: 48px;
+}
+@media (max-width: 860px) {
+  .projects-grid { margin-top: 28px; }
 }
 .proj-card {
   position: relative;
@@ -614,6 +634,9 @@ ul { list-style: none; }
 .pricing-section { background: var(--bg); }
 .pricing-header { margin-bottom: 56px; }
 .pricing-header .section-sub { max-width: 440px; }
+@media (max-width: 860px) {
+  .pricing-header { margin-bottom: 32px; }
+}
 .pricing-grid {
   display: grid;
   grid-template-columns: repeat(3,1fr);
@@ -632,16 +655,6 @@ ul { list-style: none; }
   color: rgba(255,255,255,0.9);
 }
 .price-card.hot:hover { background: #2e1f0a; }
-.price-badge {
-  position: absolute; top: -1px; left: 30px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 0.62rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  padding: 5px 14px;
-}
 .price-icon {
   width: 36px; height: 36px;
   border: 1px solid var(--border);
@@ -993,8 +1006,18 @@ footer {
   .footer-top { grid-template-columns: 1fr 1fr; gap: 28px; }
 }
 @media (max-width: 520px) {
-  .footer-top { grid-template-columns: 1fr; }
-  .footer-bottom { flex-direction: column; text-align: center; }
+  footer { padding: 36px clamp(16px, 5vw, 40px) 20px; }
+  .footer-top {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 16px;
+    padding-bottom: 24px;
+  }
+  .footer-brand { grid-column: 1 / -1; }
+  .footer-brand p { max-width: 100%; font-size: 0.78rem; }
+  .footer-col h5 { margin-bottom: 10px; }
+  .footer-col a, .footer-col p { font-size: 0.78rem; margin-bottom: 6px; }
+  .footer-bottom { flex-direction: column; text-align: center; gap: 6px; margin-top: 16px; }
+  .footer-bottom p, .footer-bottom-right { font-size: 0.65rem; }
 }
 
 /* ── SCROLL REVEAL ── */
@@ -1008,6 +1031,20 @@ footer {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   .sr { opacity: 1; transform: none; }
+}
+
+/* ── LARGE DESKTOP ── */
+@media (min-width: 1400px) {
+  .section-max { max-width: 1320px; }
+  .stats-inner { max-width: 1320px; }
+  .footer-top { max-width: 1320px; }
+  .footer-bottom { max-width: 1320px; }
+}
+@media (min-width: 1800px) {
+  .section-max { max-width: 1500px; }
+  .stats-inner { max-width: 1500px; }
+  .footer-top { max-width: 1500px; }
+  .footer-bottom { max-width: 1500px; }
 }
 </style>
 </head>
@@ -1062,7 +1099,7 @@ footer {
         </svg>
       </a>
       <a href="https://bratus.lv/pages/3d-pakalpojumi" target="_blank" class="btn-hero-ghost">
-        Skatīt bratus.lv ↗
+        Skatīt bratus.lv <span class="hero-ext-arrow">↗</span>
       </a>
     </div>
   </div>
@@ -1084,7 +1121,7 @@ footer {
       <div class="stat-label">No /h printēšanai</div>
     </div>
     <div class="stat-item sr sr-d2">
-      <div class="stat-num">16</div>
+      <div class="stat-num">Līdz 16</div>
       <div class="stat-label">Krāsas vienā projektā</div>
     </div>
     <div class="stat-item sr sr-d3">
@@ -1137,15 +1174,15 @@ footer {
         <div class="feat-text">
           <div class="eyebrow">3D Printēšana</div>
           <h3>Izcils drukas parks<br><strong>ar Bambu Lab</strong></h3>
-          <p>Mūsu flote nodrošina augstāko precizitāti un ātrumu. Neatkarīgi no pasūtījuma apjoma — rezultāts ir vienādi kvalitatīvs.</p>
+          <p>Mūsu printeru klāsts nodrošina augstāko precizitāti un ātrumu. Neatkarīgi no pasūtījuma apjoma — rezultāts ir vienādi kvalitatīvs.</p>
           <ul class="feat-list">
             <li>
               <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              5× Bambu Lab A1 Mini ar dažādiem bed plates
+              6× Bambu Lab A1 Mini ar dažādiem bed plates
             </li>
             <li>
               <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              2× Bambu Lab P1S augstas precizitātes drukai
+              2× Bambu Lab P1S un 1× Bambu Lab X1C
             </li>
             <li>
               <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
@@ -1154,7 +1191,7 @@ footer {
           </ul>
         </div>
         <div class="feat-visual sr sr-d2">
-          <img src="https://images.unsplash.com/photo-1597765654525-5cb60d312ef6?q=80&w=1170&auto=format&fit=crop" alt="3D Printer Interior">
+          <img src="https://images.unsplash.com/photo-1762579318096-8e9bc45b8feb?q=80&w=1113&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="3D Printer Interior">
           <div class="feat-chip">
             <div class="feat-chip-pulse"></div>
             <div class="feat-chip-txt">Augsta precizitāte</div>
@@ -1167,7 +1204,7 @@ footer {
         <div class="feat-text">
           <div class="eyebrow">3D Modelēšana</div>
           <h3>No skices<br><strong>līdz prototipam</strong></h3>
-          <p>Pārvēršam jūsu idejas ražošanai gatavos modeļos. Strādājam ar Fusion 360 un nodrošinām pilna cikla risinājumu.</p>
+          <p>Pārvēršam jūsu idejas ražošanai gatavos modeļos. Strādājam ar Fusion 360 un OnShape programmām un nodrošinām pilna cikla risinājumu.</p>
           <ul class="feat-list">
             <li>
               <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
@@ -1311,7 +1348,7 @@ footer {
   <div class="section-max">
     <div class="pricing-header sr">
       <div class="eyebrow">Cenas bez PVN</div>
-      <h2 class="section-title">Godīgas <strong>cenas</strong></h2>
+      <h2 class="section-title">Pārskatāmas <strong>cenas</strong></h2>
       <p class="section-sub">Caurspīdīga cenu politika — ziniet izmaksas pirms sākat.</p>
     </div>
     <div class="pricing-grid sr">
@@ -1337,7 +1374,6 @@ footer {
 
       <!-- 3D Printing (HOT) -->
       <div class="price-card hot">
-        <div class="price-badge">Populārākais</div>
         <div class="price-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
