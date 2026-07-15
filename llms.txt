@@ -1,0 +1,42 @@
+# 3D Pakalpojumi — LLMs.txt
+> Profesionāla 3D printēšana un modelēšana Latvijā ar Bambu Lab tehnoloģiju.
+
+## Par mums
+Mēs esam SIA Bratus — Latvijā bāzēts 3D drukas un modelēšanas serviss ar 9+ Bambu Lab printeriem (P1S, X1C, A1 Mini). Piedāvājam FDM 3D printēšanu, tehnisko modelēšanu (Fusion 360, OnShape) un pilna cikla prototipēšanu. Vairāk nekā 500 veiksmīgi projekti — no individuāliem pasūtījumiem līdz valsts iestāžu projektiem.
+
+## Pakalpojumi
+- **3D Printēšana**: FDM druka ar Bambu Lab printeriem. 8+ materiāli (PLA, PETG, ABS, ASA, TPU, Nylon, PC, CF/GF). Līdz 16 krāsām vienā projektā. Cena: no 3€/h (min. 10€, bez PVN).
+- **3D Modelēšana**: Tehniskā modelēšana ar Fusion 360 un OnShape. STL/STEP failu sagatavošana. Cena: 30€/h (bez PVN).
+- **Prototipēšana**: Pilna cikla izstrāde no idejas līdz fiziskam modelim. Cena: pēc pieprasījuma.
+
+## Cenas
+| Pakalpojums | Cena | Piezīmes |
+|---|---|---|
+| 3D Printēšana | 3€/h | Min. 10€, bez PVN |
+| 3D Modelēšana | 30€/h | Bez PVN |
+| Prototipēšana | Pēc pieprasījuma | Individuāls aprēķins |
+
+## Kontakti
+- Tālrunis: +371 24 424 434
+- E-pasts: razosana@bratus.lv
+- Adrese: Dārznieku iela 42, Ķekava, Ķekavas nov., LV-2123
+- Pilnā vietne: https://bratus.lv
+- Reģ. nr.: 40203628316
+- PVN reģ. nr.: LV40203628316
+
+## FAQ
+- **Kādi ir 3D printēšanas pakalpojumi?** FDM druka ar 9+ Bambu Lab printeriem, 8+ materiāliem, cena no 3€/h.
+- **Kā notiek 3D modelēšana?** Konsultācija → modelēšana Fusion 360/OnShape → STL/STEP faili → prototips. 30€/h.
+- **Kāds ir piegādes laiks?** 1-3 darba dienas standarta projektiem. Atbilde 24h laikā.
+- **Kādas ir izmaksas?** Printēšana 3€/h, modelēšana 30€/h, prototipēšana — individuāli.
+- **Kā pieteikt projektu?** Aizpildiet formu vietnē, zvaniet +371 24 424 434 vai rakstiet uz razosana@bratus.lv.
+
+## Saites
+- [Sākums](https://3dpakalpojumi.lv/)
+- [Pakalpojumi](https://3dpakalpojumi.lv/#pakalpojumi)
+- [Projekti](https://3dpakalpojumi.lv/#projekti)
+- [Cenas](https://3dpakalpojumi.lv/#cenas)
+- [FAQ](https://3dpakalpojumi.lv/#faq)
+- [Kontakti](https://3dpakalpojumi.lv/#pieteikums)
+- [bratus.lv](https://bratus.lv)
+- [3D Filamenti](https://bratus.lv/collections/3d-filamenti)
