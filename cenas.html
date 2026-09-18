@@ -171,6 +171,16 @@
   ]
 }
 </script>
+
+<!-- 3D kalkulatora importu karte -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
 </head>
 
 <body>
@@ -294,6 +304,54 @@
   </div>
 </section>
 
+<!-- 3D CENAS KALKULATORS -->
+<section class="section calc-section" id="kalkulators" aria-labelledby="kalkulators-heading">
+  <div class="section-max">
+    <div class="sr">
+      <div class="eyebrow">Interaktīvs rīks</div>
+      <h2 class="section-title" id="kalkulators-heading">3D <strong>cenas kalkulators</strong></h2>
+      <p class="section-sub">Augšupielādē STL, OBJ vai 3MF failu — vizualizēsim modeli un aprēķināsim aptuveno printēšanas laiku un cenu (3 €/h, bez PVN).</p>
+    </div>
+
+    <div class="calc-grid">
+      <div class="calc-left">
+        <div class="calc-dropzone" id="calc-dropzone" tabindex="0" role="button" aria-label="Augšupielādēt 3D failu">
+          <input type="file" id="calc-file" accept=".stl,.obj,.3mf" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <p class="calc-drop-title">Ievelc šeit 3D failu</p>
+          <p class="calc-drop-sub">vai spied, lai izvēlētos — STL · OBJ · 3MF</p>
+        </div>
+        <div class="calc-viewer" id="calc-viewer" aria-label="3D modeļa vizualizācija">
+          <div class="calc-viewer-hint" id="calc-viewer-hint">Modelis parādīsies šeit</div>
+        </div>
+      </div>
+
+      <div class="calc-right">
+        <div class="calc-settings">
+          <label class="form-label" for="calc-material">Materiāls (svara aprēķinam)</label>
+          <select id="calc-material" class="calc-select">
+            <option value="1.24" selected>PLA</option>
+            <option value="1.27">PETG</option>
+            <option value="1.04">ABS</option>
+            <option value="1.21">TPU</option>
+            <option value="1.20">PC</option>
+            <option value="1.14">Nylon (PA)</option>
+            <option value="1.25">Carbon Fiber</option>
+          </select>
+          <p class="calc-note">Profils: Bambu Lab 0.20mm Standard · 15% infill · 2 sienas · PLA ātrumi. Cena: 3 €/h bez PVN (min. 10 €).</p>
+        </div>
+        <div class="calc-results" id="calc-results">
+          <div class="calc-empty">Augšupielādē failu, lai redzētu aprēķinu.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- CTA BAND -->
 <div class="cta-band">
   <h2 class="sr">Vēlaties uzzināt vairāk<br>par <strong>BRATUS</strong>?</h2>
@@ -348,6 +406,7 @@
   </div>
 </footer>
 
+<script type="module" src="/js/calculator.js"></script>
 <script defer src="/js/main.js"></script>
 </body>
 </html>
