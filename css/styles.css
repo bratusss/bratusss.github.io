@@ -1358,3 +1358,19 @@ footer {
 }
 .calc-note-min { font-size: 0.72rem; color: var(--ink3); margin-top: 16px; }
 .calc-file-name { font-size: 0.74rem; color: var(--ink2); margin-top: 8px; word-break: break-all; }
+.calc-breakdown { border-top: 1px solid var(--border); margin-top: 18px; padding-top: 6px; }
+.calc-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 0.85rem;
+  color: var(--ink2);
+}
+.calc-row:last-of-type { border-bottom: none; }
+.calc-row span { line-height: 1.5; }
+.calc-row strong { color: var(--ink); font-weight: 500; white-space: nowrap; }
+.calc-row-total { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 12px; font-size: 0.95rem; }
+.calc-row-total span { font-weight: 500; color: var(--ink); }
+.calc-row-total strong { font-size: 1.05rem; color: var(--accent); }

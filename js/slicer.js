@@ -204,7 +204,7 @@ const PROFILE = {
   startupTime: 300        // s (sagatavošanās: uzsilšana, kalibrācija)
 };
 
-// Novērtē printēšanas laiku un cenu (3 €/h, bez PVN, min. 10 €).
+// Novērtē printēšanas laiku (cena tiek rēķināta kalkulatorā).
 export function estimatePrint(layers) {
   const n = layers.length;
   let time = PROFILE.startupTime;
@@ -231,12 +231,10 @@ export function estimatePrint(layers) {
   }
 
   const hours = time / 3600;
-  const price = Math.max(hours * 3, 10); // 3 €/h, minimums 10 €, bez PVN
 
   return {
     timeSeconds: time,
     hours: hours,
-    price: price,
     extrudedVolumeMm3: extrudedVolumeMm3,
     layerCount: n
   };

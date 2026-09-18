@@ -9,6 +9,16 @@ import { computeBBox, computeVolume, computeSurfaceArea, sliceMesh, macroLayers,
 const LAYER_HEIGHT = 0.2;
 const MAX_TRIANGLES_FOR_SLICE = 350000; // virs šī — makro aprēķins
 
+const MATERIALS = {
+  pla: { label: 'PLA', density: 1.24, price: 17 },
+  petg: { label: 'PETG', density: 1.27, price: 17 },
+  abs: { label: 'ABS', density: 1.04, price: 20 },
+  tpu: { label: 'TPU', density: 1.21, price: 20 },
+  pc: { label: 'PC', density: 1.20, price: 20 },
+  nylon: { label: 'Nylon (PA)', density: 1.14, price: 20 },
+  cf: { label: 'Carbon Fiber', density: 1.25, price: 20 }
+};
+
 const dropzone = document.getElementById('calc-dropzone');
 const fileInput = document.getElementById('calc-file');
 const viewerEl = document.getElementById('calc-viewer');
@@ -212,8 +222,9 @@ function analyze(object, fileName) {
 
 // ---------- Rezultātu attēlošana ----------
 function renderResults(r) {
-  const density = parseFloat(materialSel.value) || 1.24; // g/cm3
-  const weightG = r.print.extrudedVolumeMm3 * density * 0.001;
+  const mat = MATERIALS[materialSel.value] || MATERIALS.pla;
+  const weightG = r.print.extrudedVolumeMm3 * mat.density * 0.001;
+  const weightKg = weightG / 1000;
   const dims = [r.sizeX, r.sizeY, r.sizeZ]
     .sort((a, b) => b - a)
     .map((d) => d.toFixed(1))
@@ -221,22 +232,33 @@ function renderResults(r) {
 
   const h = Math.floor(r.print.timeSeconds / 3600);
   const m = Math.floor((r.print.timeSeconds % 3600) / 60);
+  const timeLabel = (h > 0 ? h + ' h ' : '') + m + ' min';
+
+  const timeCost = r.print.hours * 3;        // 3 €/h
+  const materialCost = weightKg * mat.price; // €/kg
+  const processingCost = 10;                 // faila apstrāde
+  const total = timeCost + materialCost + processingCost;
 
   const note = r.precise
     ? 'Aprēķins pēc slāņu sagriešanas (Bambu Lab 0.20mm Standard · 15% infill · PLA ātrumi).'
     : 'Liels modelis — aprēķins pēc tilpuma/virsmas (aptuvens).';
 
   resultsEl.innerHTML =
-    '<div class="calc-price"><strong>' + r.print.price.toFixed(2) + '</strong> <small>€ <em>bez PVN</em></small></div>' +
-    '<div class="calc-price-sub">Aptuvenais printēšanas laiks: <strong>' +
-      (h > 0 ? h + ' h ' : '') + m + ' min</strong></div>' +
+    '<div class="calc-price"><strong>' + total.toFixed(2) + '</strong> <small>€ <em>bez PVN</em></small></div>' +
+    '<div class="calc-price-sub">Aptuvenais printēšanas laiks: <strong>' + timeLabel + '</strong></div>' +
     '<div class="calc-result-grid">' +
       stat('Izmēri', dims + ' mm') +
       stat('Detaļas tilpums', (r.volumeMm3 / 1000).toFixed(2) + ' cm³') +
       stat('Aptuvenais svars', weightG.toFixed(1) + ' g') +
       stat('Slāņu skaits', String(r.print.layerCount)) +
     '</div>' +
-    '<p class="calc-note-min">Minimālais pasūtījums 10 € · 3 €/h · cena tiek precizēta pēc faila pārbaudes.</p>' +
+    '<div class="calc-breakdown">' +
+      '<div class="calc-row"><span>Printēšana (' + timeLabel + ' × 3 €/h)</span><strong>' + timeCost.toFixed(2) + ' €</strong></div>' +
+      '<div class="calc-row"><span>Materiāls (' + mat.label + ', ' + weightG.toFixed(1) + ' g × ' + mat.price + ' €/kg)</span><strong>' + materialCost.toFixed(2) + ' €</strong></div>' +
+      '<div class="calc-row"><span>Faila apstrāde</span><strong>10.00 €</strong></div>' +
+      '<div class="calc-row calc-row-total"><span>Kopā</span><strong>' + total.toFixed(2) + ' €</strong></div>' +
+    '</div>' +
+    '<p class="calc-note-min">Cena bez PVN · galīgā cena tiek precizēta pēc faila pārbaudes.</p>' +
     '<p class="calc-note">' + note + '</p>' +
     '<p class="calc-file-name">' + escapeHtml(r.fileName) + ' · ' +
       r.triangleCount.toLocaleString('lv-LV') + ' trijstūri</p>';
