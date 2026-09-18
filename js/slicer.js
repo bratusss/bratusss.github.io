@@ -186,48 +186,52 @@ export function macroLayers(tris, layerHeight) {
   return layers;
 }
 
-// Bambu Lab 0.20mm Standard profils (PLA, 0.4 mm sprausla).
-const PROFILE = {
+// Kopējie slāņošanas parametri (Bambu Studio 0.20mm Standard, 0.4 mm sprausla).
+const COMMON = {
   layerHeight: 0.2,     // mm
   lineWidth: 0.42,      // mm
   wallLoops: 2,         // ārējā + iekšējā siena
   infillDensity: 0.15,  // 15% aizpildījums
   bottomShell: 3,       // 3 cieti slāņi apakšā
   topShell: 3,          // 3 cieti slāņi augšā
-  speeds: {
-    wall: 200,          // mm/s (efektīvais vidējais)
-    sparseInfill: 220,  // mm/s
-    solidInfill: 200,   // mm/s
-    firstLayer: 50      // mm/s
-  },
   overheadPerLayer: 0.45, // s (pārvietošanās, z ass kustība, retract)
-  startupTime: 300        // s (sagatavošanās: uzsilšana, kalibrācija)
+  startupTime: 300        // s (sagatavošanās: uzsilšana, homing, kalibrācija)
+};
+
+// Printeru ātrumu profili (efektīvie ātrumi, ņemot vērā paātrinājumu).
+export const PROFILES = {
+  a1mini: { label: 'A1 Mini', maxSpeed: 500,  maxAccel: 10000, speeds: { wall: 180, sparseInfill: 200, solidInfill: 180, firstLayer: 50 } },
+  a2l:    { label: 'A2L',     maxSpeed: 500,  maxAccel: 10000, speeds: { wall: 180, sparseInfill: 200, solidInfill: 180, firstLayer: 50 } },
+  p1s:    { label: 'P1S',     maxSpeed: 500,  maxAccel: 20000, speeds: { wall: 200, sparseInfill: 220, solidInfill: 200, firstLayer: 50 } },
+  x2d:    { label: 'X2D',     maxSpeed: 1000, maxAccel: 20000, speeds: { wall: 250, sparseInfill: 280, solidInfill: 250, firstLayer: 50 } }
 };
 
 // Novērtē printēšanas laiku (cena tiek rēķināta kalkulatorā).
-export function estimatePrint(layers) {
+export function estimatePrint(layers, profileId) {
+  const profile = PROFILES[profileId] || PROFILES.p1s;
+  const speeds = profile.speeds;
   const n = layers.length;
-  let time = PROFILE.startupTime;
+  let time = COMMON.startupTime;
   let extrudedVolumeMm3 = 0;
 
   for (let i = 0; i < n; i++) {
     const layer = layers[i];
     const isFirst = i === 0;
-    const isSolid = isFirst || i < PROFILE.bottomShell || i >= n - PROFILE.topShell;
+    const isSolid = isFirst || i < COMMON.bottomShell || i >= n - COMMON.topShell;
 
-    const perimeterPath = layer.perimeter * PROFILE.wallLoops;
-    const shellArea = layer.perimeter * PROFILE.lineWidth * PROFILE.wallLoops;
+    const perimeterPath = layer.perimeter * COMMON.wallLoops;
+    const shellArea = layer.perimeter * COMMON.lineWidth * COMMON.wallLoops;
     const innerArea = Math.max(layer.area - shellArea, 0);
 
-    const fillRatio = isSolid ? 1 : PROFILE.infillDensity;
-    const fillPath = (innerArea * fillRatio) / PROFILE.lineWidth;
+    const fillRatio = isSolid ? 1 : COMMON.infillDensity;
+    const fillPath = (innerArea * fillRatio) / COMMON.lineWidth;
 
-    const wallSpeed = isFirst ? PROFILE.speeds.firstLayer : PROFILE.speeds.wall;
-    const fillSpeed = isFirst ? PROFILE.speeds.firstLayer
-      : (isSolid ? PROFILE.speeds.solidInfill : PROFILE.speeds.sparseInfill);
+    const wallSpeed = isFirst ? speeds.firstLayer : speeds.wall;
+    const fillSpeed = isFirst ? speeds.firstLayer
+      : (isSolid ? speeds.solidInfill : speeds.sparseInfill);
 
-    time += perimeterPath / wallSpeed + fillPath / fillSpeed + PROFILE.overheadPerLayer;
-    extrudedVolumeMm3 += (perimeterPath * PROFILE.lineWidth + innerArea * fillRatio) * PROFILE.layerHeight;
+    time += perimeterPath / wallSpeed + fillPath / fillSpeed + COMMON.overheadPerLayer;
+    extrudedVolumeMm3 += (perimeterPath * COMMON.lineWidth + innerArea * fillRatio) * COMMON.layerHeight;
   }
 
   const hours = time / 3600;

@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { ThreeMFLoader } from 'three/addons/loaders/3MFLoader.js';
-import { computeBBox, computeVolume, computeSurfaceArea, sliceMesh, macroLayers, estimatePrint } from './slicer.js';
+import { computeBBox, computeVolume, computeSurfaceArea, sliceMesh, macroLayers, estimatePrint, PROFILES } from './slicer.js';
 
 const LAYER_HEIGHT = 0.2;
 const MAX_TRIANGLES_FOR_SLICE = 350000; // virs šī — makro aprēķins
@@ -25,8 +25,9 @@ const viewerEl = document.getElementById('calc-viewer');
 const hintEl = document.getElementById('calc-viewer-hint');
 const resultsEl = document.getElementById('calc-results');
 const materialSel = document.getElementById('calc-material');
+const printerSel = document.getElementById('calc-printer');
 
-if (!dropzone || !fileInput || !viewerEl || !resultsEl) {
+if (!dropzone || !fileInput || !viewerEl || !resultsEl || !materialSel || !printerSel) {
   throw new Error('Kalkulatora elementi nav atrasti.');
 }
 
@@ -196,7 +197,7 @@ function analyze(object, fileName) {
   controls.target.set(0, 0, 0);
   controls.update();
 
-  // Sagriešana un laika aprēķins.
+  // Sagriešana slāņos (laiks tiek rēķināts renderResults, jo atkarīgs no printera).
   let layers;
   let precise = true;
   if (triangleCount <= MAX_TRIANGLES_FOR_SLICE) {
@@ -205,7 +206,6 @@ function analyze(object, fileName) {
     layers = macroLayers(tris, LAYER_HEIGHT);
     precise = false;
   }
-  const print = estimatePrint(layers);
 
   return {
     fileName: fileName,
@@ -215,7 +215,7 @@ function analyze(object, fileName) {
     sizeZ: sizeZ,
     volumeMm3: volumeMm3,
     surfaceMm2: surfaceMm2,
-    print: print,
+    layers: layers,
     precise: precise
   };
 }
@@ -223,24 +223,27 @@ function analyze(object, fileName) {
 // ---------- Rezultātu attēlošana ----------
 function renderResults(r) {
   const mat = MATERIALS[materialSel.value] || MATERIALS.pla;
-  const weightG = r.print.extrudedVolumeMm3 * mat.density * 0.001;
+  const prof = PROFILES[printerSel.value] || PROFILES.p1s;
+  const print = estimatePrint(r.layers, printerSel.value);
+
+  const weightG = print.extrudedVolumeMm3 * mat.density * 0.001;
   const weightKg = weightG / 1000;
   const dims = [r.sizeX, r.sizeY, r.sizeZ]
     .sort((a, b) => b - a)
     .map((d) => d.toFixed(1))
     .join(' × ');
 
-  const h = Math.floor(r.print.timeSeconds / 3600);
-  const m = Math.floor((r.print.timeSeconds % 3600) / 60);
+  const h = Math.floor(print.timeSeconds / 3600);
+  const m = Math.floor((print.timeSeconds % 3600) / 60);
   const timeLabel = (h > 0 ? h + ' h ' : '') + m + ' min';
 
-  const timeCost = r.print.hours * 3;        // 3 €/h
+  const timeCost = print.hours * 3;        // 3 €/h
   const materialCost = weightKg * mat.price; // €/kg
   const processingCost = 10;                 // faila apstrāde
   const total = timeCost + materialCost + processingCost;
 
   const note = r.precise
-    ? 'Aprēķins pēc slāņu sagriešanas (Bambu Lab 0.20mm Standard · 15% infill · PLA ātrumi).'
+    ? 'Aprēķins pēc slāņu sagriešanas (Bambu Studio 0.20mm Standard · 15% infill · ' + prof.label + ' profils).'
     : 'Liels modelis — aprēķins pēc tilpuma/virsmas (aptuvens).';
 
   resultsEl.innerHTML =
@@ -250,10 +253,10 @@ function renderResults(r) {
       stat('Izmēri', dims + ' mm') +
       stat('Detaļas tilpums', (r.volumeMm3 / 1000).toFixed(2) + ' cm³') +
       stat('Aptuvenais svars', weightG.toFixed(1) + ' g') +
-      stat('Slāņu skaits', String(r.print.layerCount)) +
+      stat('Slāņu skaits', String(print.layerCount)) +
     '</div>' +
     '<div class="calc-breakdown">' +
-      '<div class="calc-row"><span>Printēšana (' + timeLabel + ' × 3 €/h)</span><strong>' + timeCost.toFixed(2) + ' €</strong></div>' +
+      '<div class="calc-row"><span>Printēšana (' + prof.label + ', ' + timeLabel + ' × 3 €/h)</span><strong>' + timeCost.toFixed(2) + ' €</strong></div>' +
       '<div class="calc-row"><span>Materiāls (' + mat.label + ', ' + weightG.toFixed(1) + ' g × ' + mat.price + ' €/kg)</span><strong>' + materialCost.toFixed(2) + ' €</strong></div>' +
       '<div class="calc-row"><span>Faila apstrāde</span><strong>10.00 €</strong></div>' +
       '<div class="calc-row calc-row-total"><span>Kopā</span><strong>' + total.toFixed(2) + ' €</strong></div>' +
@@ -312,6 +315,11 @@ materialSel.addEventListener('change', () => {
   // Pārrēķina svaru, ja modelis jau ielādēts.
   const current = lastResult;
   if (current) renderResults(current);
+});
+
+printerSel.addEventListener('change', () => {
+  // Pārrēķina laiku un cenu, ja modelis jau ielādēts.
+  if (lastResult) renderResults(lastResult);
 });
 
 let lastResult = null;

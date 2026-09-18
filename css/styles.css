@@ -1309,6 +1309,7 @@ footer {
   transition: border-color 0.2s;
 }
 .calc-select:focus { border-color: var(--accent); }
+.calc-settings .calc-select { margin-bottom: 16px; }
 .calc-note { font-size: 0.72rem; color: var(--ink3); margin-top: 10px; line-height: 1.6; }
 
 .calc-results {
