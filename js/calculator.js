@@ -810,9 +810,17 @@ function showUpload() {
 
 // ---------- Notikumi ----------
 function bindDropzone(zone, input) {
-  zone.addEventListener('click', () => input.click());
+  zone.addEventListener('click', (e) => {
+    // Ignorē klikšķus uz pogām, selectiem u.c. (lai tie paši neatvērtu failu izvēli).
+    if (e.target.closest('button, select, input, a, label')) return;
+    input.click();
+  });
   zone.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); }
+    if (e.key === 'Enter' || e.key === ' ') {
+      if (e.target.closest('button, select, input, a, label')) return;
+      e.preventDefault();
+      input.click();
+    }
   });
   ['dragenter', 'dragover'].forEach((ev) => {
     zone.addEventListener(ev, (e) => { e.preventDefault(); zone.classList.add('drag'); });
