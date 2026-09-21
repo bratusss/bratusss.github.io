@@ -1148,7 +1148,7 @@ footer {
   max-width: 200px;
   font-weight: 300;
 }
-.footer-col h5 {
+.footer-col h2 {
   font-size: 0.62rem;
   font-weight: 500;
   letter-spacing: 0.18em;
@@ -1193,7 +1193,7 @@ footer {
   }
   .footer-brand { grid-column: 1 / -1; }
   .footer-brand p { max-width: 100%; font-size: 0.78rem; }
-  .footer-col h5 { margin-bottom: 10px; }
+  .footer-col h2 { margin-bottom: 10px; }
   .footer-col a, .footer-col p { font-size: 0.78rem; margin-bottom: 6px; }
   .footer-bottom { flex-direction: column; text-align: center; gap: 6px; margin-top: 16px; }
   .footer-bottom p, .footer-bottom-right { font-size: 0.65rem; }
@@ -1375,3 +1375,13 @@ footer {
 .calc-row-total { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 12px; font-size: 0.95rem; }
 .calc-row-total span { font-weight: 500; color: var(--ink); }
 .calc-row-total strong { font-size: 1.05rem; color: var(--accent); }
+
+
+/* ── PAGE HEADER (H1) ── */
+.page-header {
+  padding: clamp(28px, 5vw, 56px) clamp(20px, 5vw, 60px);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.page-header .section-title { margin-bottom: 0; }
+.page-header + .section { padding-top: clamp(28px, 5vw, 56px); }
