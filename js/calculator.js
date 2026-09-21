@@ -11,7 +11,56 @@ const MAX_TRIANGLES_FOR_SLICE = 350000; // virs šī — makro aprēķins
 const PRINTER_ID = 'p1s';   // printeris nav izvēlējams
 const HOURLY_RATE = 3;      // €/h
 const PROCESSING_FEE = 10;  // € — faila apstrāde
-const DEFAULT_COLOR = '#940fbd';
+
+// Nebula Premium PLA krāsu palete (presets).
+const PALETTE = [
+  { name: 'Pure White', hex: '#ffffff' },
+  { name: 'Natural', hex: '#eae0c8' },
+  { name: 'Beige', hex: '#ffdea1' },
+  { name: 'Latte Brown', hex: '#c79577' },
+  { name: 'Chocolate Brown', hex: '#473936' },
+  { name: 'Carbon Black', hex: '#0e0e0c' },
+  { name: 'Gray', hex: '#808080' },
+  { name: 'Fancy Gray', hex: '#737979' },
+  { name: 'Silver', hex: '#c0c0c0' },
+  { name: 'Pearl Silver', hex: '#c9cdcc' },
+  { name: 'Metallic Silver', hex: '#a0acac' },
+  { name: 'Metallic Black', hex: '#2c3031' },
+  { name: 'Gold', hex: '#fcce06' },
+  { name: 'Majestic Gold', hex: '#e3c200' },
+  { name: 'Old Gold', hex: '#77560f' },
+  { name: 'Copper', hex: '#ea8945' },
+  { name: 'Red', hex: '#ff0000' },
+  { name: 'Scarlet Red', hex: '#d4433e' },
+  { name: 'Fire Red', hex: '#f14017' },
+  { name: 'Red Fluo', hex: '#fb1909' },
+  { name: 'Orange', hex: '#ffa500' },
+  { name: 'Pumpkin Orange', hex: '#ffb406' },
+  { name: 'Orange Fluo', hex: '#f87300' },
+  { name: 'Sunny Yellow', hex: '#fcce09' },
+  { name: 'Yellow Fluo', hex: '#ccff00' },
+  { name: 'Fresh Green', hex: '#ade50a' },
+  { name: 'Green Fluo', hex: '#05fa09' },
+  { name: 'Bright Green', hex: '#09ae48' },
+  { name: 'Green Grass', hex: '#138732' },
+  { name: 'Green Pistachio', hex: '#b7ff71' },
+  { name: 'Light Green', hex: '#90ee90' },
+  { name: 'Military Green', hex: '#5b6d53' },
+  { name: 'Aqua Blue', hex: '#1ed2ff' },
+  { name: 'Mermaid Blue', hex: '#3bd6d0' },
+  { name: 'Light Blue', hex: '#06ccfb' },
+  { name: 'Blue Sky', hex: '#0087cd' },
+  { name: 'Storm Blue', hex: '#4b6d9c' },
+  { name: 'Dark Blue', hex: '#0042d5' },
+  { name: 'Liliac Violet', hex: '#64339e' },
+  { name: 'Lavender Field', hex: '#d7d4ff' },
+  { name: 'Plum', hex: '#ad4d73' },
+  { name: 'Satin Rose', hex: '#d15b73' },
+  { name: 'Mountain Fuchsia', hex: '#fb1b7e' },
+  { name: 'Lolipop Pink', hex: '#f105a5' }
+];
+
+const DEFAULT_COLOR = '#4b6d9c'; // Storm Blue
 
 const MATERIALS = {
   pla: { label: 'PLA', density: 1.24, price: 17 },
@@ -41,15 +90,15 @@ const materialSelWs = document.getElementById('calc-material-ws');
 const qtyEl = document.getElementById('calc-qty');
 const qtyMinus = document.getElementById('calc-qty-minus');
 const qtyPlus = document.getElementById('calc-qty-plus');
-const colorEl = document.getElementById('calc-color');
-const colorHexEl = document.getElementById('calc-color-hex');
+const colorSwatchesEl = document.getElementById('calc-color-swatches');
+const colorLabelEl = document.getElementById('calc-color-label');
 const partSummaryEl = document.getElementById('calc-part-summary');
 const totalEl = document.getElementById('calc-total');
 
 if ([
   uploadScreen, workspaceScreen, dropzone, fileInput, fileInputMore, uploadStatus,
   seePriceBtn, backBtn, addPartBtn, partsListEl, viewerEl, hintEl,
-  materialSel, materialSelWs, qtyEl, qtyMinus, qtyPlus, colorEl, colorHexEl,
+  materialSel, materialSelWs, qtyEl, qtyMinus, qtyPlus, colorSwatchesEl, colorLabelEl,
   partSummaryEl, totalEl
 ].some((el) => !el)) {
   throw new Error('Kalkulatora elementi nav atrasti.');
@@ -336,8 +385,7 @@ function disposePart(part) {
 
 function updateControls(part) {
   qtyEl.value = part.quantity;
-  colorEl.value = part.color;
-  colorHexEl.textContent = part.color.toUpperCase();
+  updateColorSelection(part.color);
 }
 
 function updateUploadStatus() {
@@ -495,15 +543,40 @@ function setQuantity(value) {
   renderPrice();
 }
 
-colorEl.addEventListener('input', () => {
+function renderSwatches() {
+  colorSwatchesEl.innerHTML = '';
+  PALETTE.forEach((c) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'calc-color-swatch';
+    b.style.background = c.hex;
+    b.title = c.name;
+    b.setAttribute('aria-label', c.name);
+    b.dataset.hex = c.hex;
+    b.dataset.name = c.name;
+    b.addEventListener('click', () => setColor(c));
+    colorSwatchesEl.appendChild(b);
+  });
+}
+
+function updateColorSelection(hex) {
+  colorSwatchesEl.querySelectorAll('.calc-color-swatch').forEach((s) => {
+    s.classList.toggle('is-active', s.dataset.hex.toUpperCase() === hex.toUpperCase());
+  });
+  const found = PALETTE.find((c) => c.hex.toUpperCase() === hex.toUpperCase());
+  colorLabelEl.textContent = found ? found.name : '';
+}
+
+function setColor(c) {
   const part = getActive();
   if (!part) return;
-  part.color = colorEl.value;
-  part.material.color.set(part.color);
-  colorHexEl.textContent = part.color.toUpperCase();
-});
+  part.color = c.hex;
+  part.material.color.set(c.hex);
+  updateColorSelection(c.hex);
+}
 
 // Sākotnējais stāvoklis
+renderSwatches();
 updateUploadStatus();
 renderPartsList();
 renderPrice();

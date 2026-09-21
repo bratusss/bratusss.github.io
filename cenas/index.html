@@ -222,20 +222,6 @@
 <!-- MAIN CONTENT -->
 <main id="main-content">
 
-<!-- BREADCRUMB -->
-<nav class="breadcrumb" aria-label="Breadcrumb">
-  <ol>
-    <li><a href="/">Sākums</a></li>
-    <li aria-current="page">Cenas</li>
-  </ol>
-</nav>
-
-<header class="page-header">
-  <div class="section-max">
-    <h1 class="section-title">3D printēšanas cena</h1>
-  </div>
-</header>
-
 <!-- 3D CENAS KALKULATORS -->
 <section class="section calc-section" id="kalkulators">
   <!-- 1. EKRĀNS: augšupielāde -->
@@ -305,11 +291,9 @@
           </div>
         </div>
         <div class="calc-control-group">
-          <label class="form-label" for="calc-color">Krāsa</label>
-          <div class="calc-color-row">
-            <input type="color" id="calc-color" value="#940fbd" aria-label="Detaļas krāsa">
-            <span class="calc-color-hex" id="calc-color-hex">#940FBD</span>
-          </div>
+          <label class="form-label">Krāsa</label>
+          <div class="calc-color-swatches" id="calc-color-swatches"></div>
+          <span class="calc-color-label" id="calc-color-label"></span>
         </div>
         <div class="calc-control-group">
           <label class="form-label" for="calc-material-ws">Materiāls</label>

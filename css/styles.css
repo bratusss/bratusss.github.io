@@ -1235,13 +1235,16 @@ footer {
 [id] { scroll-margin-top: 88px; }
 
 /* ── 3D CENAS KALKULATORS ── */
-.calc-section { background: var(--bg); padding-left: 0; padding-right: 0; }
+.calc-section { background: var(--bg); padding: 64px 0 0; }
+@media (max-width: 520px) {
+  .calc-section { padding-top: 56px; }
+}
 
 .calc-screen { display: none; }
 .calc-screen.is-active { display: block; }
 
 /* 1. ekrāns — augšupielāde */
-.calc-upload { max-width: 640px; margin: 0 auto; padding: 8px clamp(20px, 5vw, 60px) 48px; }
+.calc-upload { max-width: 640px; margin: 0 auto; padding: 24px clamp(20px, 5vw, 60px) 48px; }
 
 .calc-dropzone {
   border: 1.5px dashed #c9a8d8;
@@ -1318,7 +1321,7 @@ footer {
 .calc-workspace-grid {
   display: grid;
   grid-template-columns: 270px minmax(0, 1fr) 300px;
-  height: min(740px, calc(100vh - 160px));
+  height: calc(100vh - 150px); min-height: 440px;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   background: var(--bg);
@@ -1417,15 +1420,24 @@ footer {
 .calc-qty input::-webkit-outer-spin-button,
 .calc-qty input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-.calc-color-row { display: flex; align-items: center; gap: 12px; }
-.calc-color-row input[type="color"] {
-  width: 46px; height: 46px; padding: 0;
-  border: 1px solid var(--border); border-radius: 10px;
-  background: transparent; cursor: pointer;
+.calc-color-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+  gap: 7px;
 }
-.calc-color-row input[type="color"]::-webkit-color-swatch-wrapper { padding: 4px; }
-.calc-color-row input[type="color"]::-webkit-color-swatch { border: none; border-radius: 6px; }
-.calc-color-hex { font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--ink2); text-transform: uppercase; }
+.calc-color-swatch {
+  aspect-ratio: 1;
+  width: 100%;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.15);
+  transition: transform 0.12s, border-color 0.12s;
+}
+.calc-color-swatch:hover { transform: scale(1.12); }
+.calc-color-swatch.is-active { border-color: var(--ink); box-shadow: inset 0 0 0 2px #fff, 0 0 0 1px var(--ink); }
+.calc-color-label { display: block; margin-top: 10px; font-size: 0.82rem; color: var(--ink2); }
 
 .calc-part-summary {
   margin-top: auto;
