@@ -1235,13 +1235,13 @@ footer {
 [id] { scroll-margin-top: 88px; }
 
 /* ── 3D CENAS KALKULATORS ── */
-.calc-section { background: var(--bg); }
+.calc-section { background: var(--bg); padding-left: 0; padding-right: 0; }
 
 .calc-screen { display: none; }
 .calc-screen.is-active { display: block; }
 
 /* 1. ekrāns — augšupielāde */
-.calc-upload { max-width: 640px; margin: 0 auto; padding: 8px 0 48px; }
+.calc-upload { max-width: 640px; margin: 0 auto; padding: 8px clamp(20px, 5vw, 60px) 48px; }
 
 .calc-dropzone {
   border: 1.5px dashed #c9a8d8;
