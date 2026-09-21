@@ -852,7 +852,10 @@ fileInputMore.addEventListener('change', () => {
   }
 });
 
-seePriceBtn.addEventListener('click', showWorkspace);
+seePriceBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  showWorkspace();
+});
 backBtn.addEventListener('click', showUpload);
 
 materialSel.addEventListener('change', () => {
