@@ -242,30 +242,86 @@
     <div class="sr">
       <div class="eyebrow">Interaktīvs rīks</div>
       <h2 class="section-title" id="kalkulators-heading">3D <strong>cenas kalkulators</strong></h2>
-      <p class="section-sub">Augšupielādē STL, OBJ vai 3MF failu — vizualizēsim modeli un aprēķināsim aptuveno cenu: 3 €/h + materiāls + faila apstrāde 10 € (bez PVN).</p>
+      <p class="section-sub">Augšupielādē STL, OBJ vai 3MF failu, izvēlies materiālu un saņem aptuveno cenu — jebkuru detaļu daudzumu un krāsu.</p>
     </div>
+  </div>
 
-    <div class="calc-grid">
-      <div class="calc-left">
+  <!-- 1. EKRĀNS: augšupielāde -->
+  <div class="calc-screen calc-screen-upload is-active" id="calc-upload-screen">
+    <div class="section-max">
+      <div class="calc-upload">
         <div class="calc-dropzone" id="calc-dropzone" tabindex="0" role="button" aria-label="Augšupielādēt 3D failu">
-          <input type="file" id="calc-file" accept=".stl,.obj,.3mf" hidden>
+          <input type="file" id="calc-file" accept=".stl,.obj,.3mf" multiple hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="17 8 12 3 7 8"/>
             <line x1="12" y1="3" x2="12" y2="15"/>
           </svg>
           <p class="calc-drop-title">Ievelc šeit 3D failu</p>
-          <p class="calc-drop-sub">vai spied, lai izvēlētos — STL · OBJ · 3MF</p>
+          <p class="calc-drop-sub">vai spied, lai izvēlētos — STL · OBJ · 3MF (vari pievienot arī vairākus)</p>
+          <div class="calc-material-pick">
+            <label class="form-label" for="calc-material">Materiāls</label>
+            <select id="calc-material" class="calc-select">
+              <option value="pla" selected>PLA — 17 €/kg</option>
+              <option value="petg">PETG — 17 €/kg</option>
+              <option value="abs">ABS — 20 €/kg</option>
+              <option value="tpu">TPU — 20 €/kg</option>
+              <option value="pc">PC — 20 €/kg</option>
+              <option value="nylon">Nylon (PA) — 20 €/kg</option>
+              <option value="cf">Carbon Fiber — 20 €/kg</option>
+            </select>
+          </div>
+          <div class="calc-upload-status" id="calc-upload-status" role="status" aria-live="polite"></div>
+          <button class="calc-btn-primary" id="calc-see-price" type="button" disabled>Redzēt cenu</button>
         </div>
+
+        <div class="calc-upload-info">
+          <div class="calc-info-item"><strong>1.</strong> Augšupielādē 3D failu</div>
+          <div class="calc-info-item"><strong>2.</strong> Izvēlies materiālu</div>
+          <div class="calc-info-item"><strong>3.</strong> Saņem aptuveno cenu</div>
+        </div>
+        <p class="calc-note-min">Cena: 3 €/h + materiāls + faila apstrāde 10 € · bez PVN · galīgo cenu precizē pēc faila pārbaudes.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. EKRĀNS: darbalauks -->
+  <div class="calc-screen calc-workspace" id="calc-workspace-screen">
+    <div class="calc-workspace-grid">
+      <aside class="calc-parts-panel" aria-label="Detaļu saraksts">
+        <div class="calc-panel-head">
+          <h3>Detaļas</h3>
+          <button class="calc-add-btn" id="calc-add-part" type="button">+ Pievienot</button>
+          <input type="file" id="calc-file-more" accept=".stl,.obj,.3mf" multiple hidden>
+        </div>
+        <ul class="calc-parts-list" id="calc-parts-list"></ul>
+      </aside>
+
+      <div class="calc-viewer-col">
         <div class="calc-viewer" id="calc-viewer" aria-label="3D modeļa vizualizācija">
           <div class="calc-viewer-hint" id="calc-viewer-hint">Modelis parādīsies šeit</div>
         </div>
       </div>
 
-      <div class="calc-right">
-        <div class="calc-settings">
-          <label class="form-label" for="calc-material">Materiāls</label>
-          <select id="calc-material" class="calc-select">
+      <aside class="calc-controls-panel" aria-label="Detaļas iestatījumi">
+        <div class="calc-control-group">
+          <label class="form-label" for="calc-qty">Daudzums</label>
+          <div class="calc-qty">
+            <button type="button" id="calc-qty-minus" aria-label="Samazināt daudzumu">−</button>
+            <input type="number" id="calc-qty" value="1" min="1" max="999">
+            <button type="button" id="calc-qty-plus" aria-label="Palielināt daudzumu">+</button>
+          </div>
+        </div>
+        <div class="calc-control-group">
+          <label class="form-label" for="calc-color">Krāsa</label>
+          <div class="calc-color-row">
+            <input type="color" id="calc-color" value="#940fbd" aria-label="Detaļas krāsa">
+            <span class="calc-color-hex" id="calc-color-hex">#940FBD</span>
+          </div>
+        </div>
+        <div class="calc-control-group">
+          <label class="form-label" for="calc-material-ws">Materiāls</label>
+          <select id="calc-material-ws" class="calc-select">
             <option value="pla" selected>PLA — 17 €/kg</option>
             <option value="petg">PETG — 17 €/kg</option>
             <option value="abs">ABS — 20 €/kg</option>
@@ -274,18 +330,16 @@
             <option value="nylon">Nylon (PA) — 20 €/kg</option>
             <option value="cf">Carbon Fiber — 20 €/kg</option>
           </select>
-          <label class="form-label" for="calc-printer">Printeris</label>
-          <select id="calc-printer" class="calc-select">
-            <option value="a1mini">A1 Mini</option>
-            <option value="a2l">A2L</option>
-            <option value="p1s" selected>P1S</option>
-            <option value="x2d">X2D</option>
-          </select>
-          <p class="calc-note">Profils: Bambu Studio 0.20mm Standard · 15% infill · 2 sienas. Ātrumi pēc izvēlētā printera. Cena: 3 €/h + materiāls (PLA/PETG 17 €/kg, pārējie 20 €/kg) + faila apstrāde 10 €.</p>
         </div>
-        <div class="calc-results" id="calc-results">
-          <div class="calc-empty">Augšupielādē failu, lai redzētu aprēķinu.</div>
-        </div>
+        <div class="calc-part-summary" id="calc-part-summary"></div>
+      </aside>
+    </div>
+
+    <div class="calc-price-bar">
+      <button class="calc-btn-ghost" id="calc-back" type="button">← Atpakaļ</button>
+      <div class="calc-price-total">
+        <span>Kopā · bez PVN</span>
+        <strong id="calc-total">0.00 €</strong>
       </div>
     </div>
   </div>

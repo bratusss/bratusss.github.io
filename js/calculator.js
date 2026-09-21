@@ -4,10 +4,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { ThreeMFLoader } from 'three/addons/loaders/3MFLoader.js';
-import { computeBBox, computeVolume, computeSurfaceArea, sliceMesh, macroLayers, estimatePrint, PROFILES } from './slicer.js';
+import { computeBBox, computeVolume, computeSurfaceArea, sliceMesh, macroLayers, estimatePrint } from './slicer.js';
 
 const LAYER_HEIGHT = 0.2;
 const MAX_TRIANGLES_FOR_SLICE = 350000; // virs šī — makro aprēķins
+const PRINTER_ID = 'p1s';   // printeris nav izvēlējams
+const HOURLY_RATE = 3;      // €/h
+const PROCESSING_FEE = 10;  // € — faila apstrāde
+const DEFAULT_COLOR = '#940fbd';
 
 const MATERIALS = {
   pla: { label: 'PLA', density: 1.24, price: 17 },
@@ -19,15 +23,35 @@ const MATERIALS = {
   cf: { label: 'Carbon Fiber', density: 1.25, price: 20 }
 };
 
+// DOM elementi
+const uploadScreen = document.getElementById('calc-upload-screen');
+const workspaceScreen = document.getElementById('calc-workspace-screen');
 const dropzone = document.getElementById('calc-dropzone');
 const fileInput = document.getElementById('calc-file');
+const fileInputMore = document.getElementById('calc-file-more');
+const uploadStatus = document.getElementById('calc-upload-status');
+const seePriceBtn = document.getElementById('calc-see-price');
+const backBtn = document.getElementById('calc-back');
+const addPartBtn = document.getElementById('calc-add-part');
+const partsListEl = document.getElementById('calc-parts-list');
 const viewerEl = document.getElementById('calc-viewer');
 const hintEl = document.getElementById('calc-viewer-hint');
-const resultsEl = document.getElementById('calc-results');
 const materialSel = document.getElementById('calc-material');
-const printerSel = document.getElementById('calc-printer');
+const materialSelWs = document.getElementById('calc-material-ws');
+const qtyEl = document.getElementById('calc-qty');
+const qtyMinus = document.getElementById('calc-qty-minus');
+const qtyPlus = document.getElementById('calc-qty-plus');
+const colorEl = document.getElementById('calc-color');
+const colorHexEl = document.getElementById('calc-color-hex');
+const partSummaryEl = document.getElementById('calc-part-summary');
+const totalEl = document.getElementById('calc-total');
 
-if (!dropzone || !fileInput || !viewerEl || !resultsEl || !materialSel || !printerSel) {
+if ([
+  uploadScreen, workspaceScreen, dropzone, fileInput, fileInputMore, uploadStatus,
+  seePriceBtn, backBtn, addPartBtn, partsListEl, viewerEl, hintEl,
+  materialSel, materialSelWs, qtyEl, qtyMinus, qtyPlus, colorEl, colorHexEl,
+  partSummaryEl, totalEl
+].some((el) => !el)) {
   throw new Error('Kalkulatora elementi nav atrasti.');
 }
 
@@ -54,25 +78,21 @@ const fillLight = new THREE.DirectionalLight(0xffffff, 0.45);
 fillLight.position.set(-1, -0.5, -1);
 scene.add(fillLight);
 
-const displayMaterial = new THREE.MeshStandardMaterial({
-  color: 0x940fbd,
-  roughness: 0.55,
-  metalness: 0.08,
-  flatShading: true,
-  side: THREE.DoubleSide
-});
-
 let modelGroup = null;
+
+function createPartMaterial(color) {
+  return new THREE.MeshStandardMaterial({
+    color: new THREE.Color(color),
+    roughness: 0.55,
+    metalness: 0.08,
+    flatShading: true,
+    side: THREE.DoubleSide
+  });
+}
 
 function clearModel() {
   if (modelGroup) {
     scene.remove(modelGroup);
-    modelGroup.traverse((o) => {
-      if (o.isMesh) {
-        if (o.geometry) o.geometry.dispose();
-        if (o.material && o.material !== displayMaterial) o.material.dispose();
-      }
-    });
     modelGroup = null;
   }
 }
@@ -116,21 +136,36 @@ function flattenTriangles(geoms) {
   return out;
 }
 
-// ---------- Modela ielāde un aprēķins ----------
-async function handleFile(file) {
-  if (!file) return;
-  const ext = (file.name.split('.').pop() || '').toLowerCase();
+// ---------- Stāvoklis ----------
+let parts = [];      // {id, fileName, object, material, result, color, quantity}
+let activeId = null;
+let materialKey = 'pla';
+let seq = 0;
+
+// ---------- Failu ielāde un analīze ----------
+function fileExt(name) {
+  return (name.split('.').pop() || '').toLowerCase();
+}
+
+async function loadFiles(files) {
+  for (const file of Array.from(files || [])) {
+    await addPart(file);
+  }
+}
+
+async function addPart(file) {
+  const ext = fileExt(file.name);
   if (['stl', 'obj', '3mf'].indexOf(ext) === -1) {
-    showError('Neatbalstīts formāts. Lūdzu izvēlies STL, OBJ vai 3MF failu.');
+    showError('Neatbalstīts formāts: ' + file.name + '. Lūdzu izvēlies STL, OBJ vai 3MF failu.');
     return;
   }
 
-  setStatus('Ielādē…');
+  setStatus('Ielādē ' + file.name + '…');
   let object;
   try {
     if (ext === 'stl') {
       const buf = await file.arrayBuffer();
-      object = new THREE.Mesh(new STLLoader().parse(buf), displayMaterial);
+      object = new THREE.Mesh(new STLLoader().parse(buf));
     } else if (ext === 'obj') {
       const text = await file.text();
       object = new OBJLoader().parse(text);
@@ -149,9 +184,26 @@ async function handleFile(file) {
 
   try {
     const result = analyze(object, file.name);
-    lastResult = result;
-    renderResults(result);
+    const color = DEFAULT_COLOR;
+    const material = createPartMaterial(color);
+    object.traverse((o) => {
+      if (o.isMesh && o.geometry) o.material = material;
+    });
+
+    const part = {
+      id: ++seq,
+      fileName: file.name,
+      object: object,
+      material: material,
+      result: result,
+      color: color,
+      quantity: 1
+    };
+    parts.push(part);
+    renderPartsList();
+    setActivePart(part.id);
     setStatus(null);
+    updateUploadStatus();
   } catch (err) {
     showError('Aprēķina kļūda: ' + err.message);
   }
@@ -163,7 +215,6 @@ function analyze(object, fileName) {
   const geoms = [];
   object.traverse((o) => {
     if (o.isMesh && o.geometry) {
-      o.material = displayMaterial;
       if (!o.geometry.attributes.normal) o.geometry.computeVertexNormals();
       const g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry;
       geoms.push({ geometry: g, matrix: o.matrixWorld.clone() });
@@ -177,27 +228,11 @@ function analyze(object, fileName) {
   const bbox = computeBBox(tris);
   const volumeMm3 = computeVolume(tris);
   const surfaceMm2 = computeSurfaceArea(tris);
-
-  // Displejs: centrē un mērogo.
-  clearModel();
-  modelGroup = new THREE.Group();
-  modelGroup.add(object);
-
   const sizeX = bbox.maxX - bbox.minX;
   const sizeY = bbox.maxY - bbox.minY;
   const sizeZ = bbox.maxZ - bbox.minZ;
-  const maxDim = Math.max(sizeX, sizeY, sizeZ, 1e-6);
-  const scale = 80 / maxDim;
-  modelGroup.scale.setScalar(scale);
-  const cx = (bbox.minX + bbox.maxX) / 2;
-  const cy = (bbox.minY + bbox.maxY) / 2;
-  const cz = (bbox.minZ + bbox.maxZ) / 2;
-  modelGroup.position.set(-cx * scale, -cy * scale, -cz * scale);
-  scene.add(modelGroup);
-  controls.target.set(0, 0, 0);
-  controls.update();
 
-  // Sagriešana slāņos (laiks tiek rēķināts renderResults, jo atkarīgs no printera).
+  // Sagriešana slāņos (laiks tiek rēķināts renderPrice).
   let layers;
   let precise = true;
   if (triangleCount <= MAX_TRIANGLES_FOR_SLICE) {
@@ -208,82 +243,168 @@ function analyze(object, fileName) {
   }
 
   return {
-    fileName: fileName,
-    triangleCount: triangleCount,
-    sizeX: sizeX,
-    sizeY: sizeY,
-    sizeZ: sizeZ,
-    volumeMm3: volumeMm3,
-    surfaceMm2: surfaceMm2,
-    layers: layers,
-    precise: precise
+    fileName, triangleCount, bbox, sizeX, sizeY, sizeZ,
+    volumeMm3, surfaceMm2, layers, precise
   };
 }
 
-// ---------- Rezultātu attēlošana ----------
-function renderResults(r) {
-  const mat = MATERIALS[materialSel.value] || MATERIALS.pla;
-  const prof = PROFILES[printerSel.value] || PROFILES.p1s;
-  const print = estimatePrint(r.layers, printerSel.value);
+// ---------- Aktīvā detaļa ----------
+function getActive() {
+  for (const p of parts) if (p.id === activeId) return p;
+  return parts[0] || null;
+}
 
-  const weightG = print.extrudedVolumeMm3 * mat.density * 0.001;
-  const weightKg = weightG / 1000;
-  const dims = [r.sizeX, r.sizeY, r.sizeZ]
+function setActivePart(id) {
+  activeId = id;
+  renderPartsList();
+  const part = getActive();
+  if (!part) {
+    clearModel();
+    hintEl.style.display = 'flex';
+    partSummaryEl.innerHTML = '';
+    return;
+  }
+  hintEl.style.display = 'none';
+  showModel(part);
+  updateControls(part);
+  renderPrice();
+}
+
+function showModel(part) {
+  clearModel();
+  modelGroup = new THREE.Group();
+  const b = part.result.bbox;
+  const maxDim = Math.max(part.result.sizeX, part.result.sizeY, part.result.sizeZ, 1e-6);
+  const scale = 80 / maxDim;
+  modelGroup.scale.setScalar(scale);
+  const cx = (b.minX + b.maxX) / 2;
+  const cy = (b.minY + b.maxY) / 2;
+  const cz = (b.minZ + b.maxZ) / 2;
+  modelGroup.add(part.object);
+  modelGroup.position.set(-cx * scale, -cy * scale, -cz * scale);
+  scene.add(modelGroup);
+  controls.target.set(0, 0, 0);
+  controls.update();
+}
+
+// ---------- UI atjauninājumi ----------
+function formatDims(result) {
+  return [result.sizeX, result.sizeY, result.sizeZ]
     .sort((a, b) => b - a)
     .map((d) => d.toFixed(1))
-    .join(' × ');
-
-  const h = Math.floor(print.timeSeconds / 3600);
-  const m = Math.floor((print.timeSeconds % 3600) / 60);
-  const timeLabel = (h > 0 ? h + ' h ' : '') + m + ' min';
-
-  const timeCost = print.hours * 3;        // 3 €/h
-  const materialCost = weightKg * mat.price; // €/kg
-  const processingCost = 10;                 // faila apstrāde
-  const total = timeCost + materialCost + processingCost;
-
-  const note = r.precise
-    ? 'Aprēķins pēc slāņu sagriešanas (Bambu Studio 0.20mm Standard · 15% infill · ' + prof.label + ' profils).'
-    : 'Liels modelis — aprēķins pēc tilpuma/virsmas (aptuvens).';
-
-  resultsEl.innerHTML =
-    '<div class="calc-price"><strong>' + total.toFixed(2) + '</strong> <small>€ <em>bez PVN</em></small></div>' +
-    '<div class="calc-price-sub">Aptuvenais printēšanas laiks: <strong>' + timeLabel + '</strong></div>' +
-    '<div class="calc-result-grid">' +
-      stat('Izmēri', dims + ' mm') +
-      stat('Detaļas tilpums', (r.volumeMm3 / 1000).toFixed(2) + ' cm³') +
-      stat('Aptuvenais svars', weightG.toFixed(1) + ' g') +
-      stat('Slāņu skaits', String(print.layerCount)) +
-    '</div>' +
-    '<div class="calc-breakdown">' +
-      '<div class="calc-row"><span>Printēšana (' + prof.label + ', ' + timeLabel + ' × 3 €/h)</span><strong>' + timeCost.toFixed(2) + ' €</strong></div>' +
-      '<div class="calc-row"><span>Materiāls (' + mat.label + ', ' + weightG.toFixed(1) + ' g × ' + mat.price + ' €/kg)</span><strong>' + materialCost.toFixed(2) + ' €</strong></div>' +
-      '<div class="calc-row"><span>Faila apstrāde</span><strong>10.00 €</strong></div>' +
-      '<div class="calc-row calc-row-total"><span>Kopā</span><strong>' + total.toFixed(2) + ' €</strong></div>' +
-    '</div>' +
-    '<p class="calc-note-min">Cena bez PVN · galīgā cena tiek precizēta pēc faila pārbaudes.</p>' +
-    '<p class="calc-note">' + note + '</p>' +
-    '<p class="calc-file-name">' + escapeHtml(r.fileName) + ' · ' +
-      r.triangleCount.toLocaleString('lv-LV') + ' trijstūri</p>';
+    .join(' × ') + ' mm';
 }
 
-function stat(label, value) {
-  return '<div class="calc-stat"><span class="calc-stat-label">' + label +
-    '</span><strong>' + value + '</strong></div>';
+function renderPartsList() {
+  partsListEl.innerHTML = '';
+  parts.forEach((p) => {
+    const li = document.createElement('li');
+    li.className = 'calc-part' + (p.id === activeId ? ' is-active' : '');
+    li.innerHTML =
+      '<button type="button" class="calc-part-btn" data-id="' + p.id + '">' +
+        '<span class="calc-part-name">' + escapeHtml(p.fileName) + '</span>' +
+        '<span class="calc-part-dims">' + formatDims(p.result) + '</span>' +
+        '<span class="calc-part-qty">Daudzums: ' + p.quantity + '</span>' +
+      '</button>' +
+      '<button type="button" class="calc-part-remove" data-id="' + p.id + '" aria-label="Noņemt detaļu">×</button>';
+    li.querySelector('.calc-part-btn').addEventListener('click', () => setActivePart(p.id));
+    li.querySelector('.calc-part-remove').addEventListener('click', () => removePart(p.id));
+    partsListEl.appendChild(li);
+  });
 }
 
+function removePart(id) {
+  const idx = parts.findIndex((p) => p.id === id);
+  if (idx === -1) return;
+  const [removed] = parts.splice(idx, 1);
+  disposePart(removed);
+  if (activeId === id) activeId = parts.length ? parts[0].id : null;
+  renderPartsList();
+  setActivePart(activeId);
+  updateUploadStatus();
+}
+
+function disposePart(part) {
+  part.object.traverse((o) => {
+    if (o.isMesh) {
+      if (o.geometry) o.geometry.dispose();
+      if (o.material && o.material !== part.material) o.material.dispose();
+    }
+  });
+  if (part.material) part.material.dispose();
+}
+
+function updateControls(part) {
+  qtyEl.value = part.quantity;
+  colorEl.value = part.color;
+  colorHexEl.textContent = part.color.toUpperCase();
+}
+
+function updateUploadStatus() {
+  if (!parts.length) {
+    uploadStatus.textContent = '';
+    seePriceBtn.disabled = true;
+    return;
+  }
+  uploadStatus.textContent = 'Pievienotas detaļas: ' + parts.map((p) => p.fileName).join(', ');
+  seePriceBtn.disabled = false;
+}
+
+// ---------- Cena ----------
+function estimatePart(part) {
+  const mat = MATERIALS[materialKey] || MATERIALS.pla;
+  const print = estimatePrint(part.result.layers, PRINTER_ID);
+  const weightG = print.extrudedVolumeMm3 * mat.density * 0.001;
+  const weightKg = weightG / 1000;
+  const timeCost = print.hours * HOURLY_RATE;
+  const materialCost = weightKg * mat.price;
+  const processingCost = PROCESSING_FEE;
+  return {
+    total: timeCost + materialCost + processingCost,
+    timeCost, materialCost, processingCost,
+    weightG, hours: print.hours, timeSeconds: print.timeSeconds,
+    layerCount: print.layerCount, label: mat.label
+  };
+}
+
+function formatTime(seconds) {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  return (h > 0 ? h + ' h ' : '') + m + ' min';
+}
+
+function renderPrice() {
+  let total = 0;
+  for (const p of parts) {
+    total += estimatePart(p).total * p.quantity;
+  }
+  totalEl.textContent = total.toFixed(2) + ' €';
+
+  const part = getActive();
+  if (!part) { partSummaryEl.innerHTML = ''; return; }
+  const e = estimatePart(part);
+  partSummaryEl.innerHTML =
+    '<div class="calc-sum-title">Aktīvā detaļa</div>' +
+    '<div class="calc-sum-row"><span>Drukas laiks</span><strong>' + formatTime(e.timeSeconds) + '</strong></div>' +
+    '<div class="calc-sum-row"><span>Svars</span><strong>' + e.weightG.toFixed(1) + ' g</strong></div>' +
+    '<div class="calc-sum-row"><span>Materiāls</span><strong>' + e.label + '</strong></div>' +
+    '<div class="calc-sum-row"><span>Detaļas cena</span><strong>' + e.total.toFixed(2) + ' €</strong></div>' +
+    '<div class="calc-sum-row"><span>× ' + part.quantity + '</span><strong>' + (e.total * part.quantity).toFixed(2) + ' €</strong></div>';
+}
+
+// ---------- Status / kļūdas ----------
 function setStatus(text) {
   if (text) {
     hintEl.textContent = text;
     hintEl.style.display = 'flex';
+    uploadStatus.textContent = text;
   } else {
     hintEl.style.display = 'none';
   }
 }
 
 function showError(msg) {
-  setStatus(null);
-  resultsEl.innerHTML = '<div class="calc-err">' + escapeHtml(msg) + '</div>';
+  setStatus(msg);
 }
 
 function escapeHtml(s) {
@@ -292,34 +413,97 @@ function escapeHtml(s) {
   }[c]));
 }
 
+// ---------- Ekrānu pārslēgšana ----------
+function showWorkspace() {
+  if (!parts.length) return;
+  uploadScreen.classList.remove('is-active');
+  workspaceScreen.classList.add('is-active');
+  requestAnimationFrame(() => {
+    resize();
+    renderer.render(scene, camera);
+  });
+  workspaceScreen.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function showUpload() {
+  workspaceScreen.classList.remove('is-active');
+  uploadScreen.classList.add('is-active');
+  uploadScreen.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 // ---------- Notikumi ----------
-dropzone.addEventListener('click', () => fileInput.click());
-dropzone.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
-});
-fileInput.addEventListener('change', () => {
-  if (fileInput.files && fileInput.files[0]) handleFile(fileInput.files[0]);
+function bindDropzone(zone, input) {
+  zone.addEventListener('click', () => input.click());
+  zone.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); }
+  });
+  ['dragenter', 'dragover'].forEach((ev) => {
+    zone.addEventListener(ev, (e) => { e.preventDefault(); zone.classList.add('drag'); });
+  });
+  ['dragleave', 'drop'].forEach((ev) => {
+    zone.addEventListener(ev, (e) => { e.preventDefault(); zone.classList.remove('drag'); });
+  });
+  zone.addEventListener('drop', (e) => {
+    if (e.dataTransfer.files && e.dataTransfer.files.length) {
+      e.preventDefault();
+      loadFiles(e.dataTransfer.files);
+    }
+  });
+  input.addEventListener('change', () => {
+    if (input.files && input.files.length) {
+      loadFiles(input.files);
+      input.value = '';
+    }
+  });
+}
+
+bindDropzone(dropzone, fileInput);
+
+addPartBtn.addEventListener('click', () => fileInputMore.click());
+fileInputMore.addEventListener('change', () => {
+  if (fileInputMore.files && fileInputMore.files.length) {
+    loadFiles(fileInputMore.files);
+    fileInputMore.value = '';
+  }
 });
 
-['dragenter', 'dragover'].forEach((ev) => {
-  dropzone.addEventListener(ev, (e) => { e.preventDefault(); dropzone.classList.add('drag'); });
-});
-['dragleave', 'drop'].forEach((ev) => {
-  dropzone.addEventListener(ev, (e) => { e.preventDefault(); dropzone.classList.remove('drag'); });
-});
-dropzone.addEventListener('drop', (e) => {
-  if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
-});
+seePriceBtn.addEventListener('click', showWorkspace);
+backBtn.addEventListener('click', showUpload);
 
 materialSel.addEventListener('change', () => {
-  // Pārrēķina svaru, ja modelis jau ielādēts.
-  const current = lastResult;
-  if (current) renderResults(current);
+  materialKey = materialSel.value;
+  materialSelWs.value = materialKey;
+  renderPrice();
 });
 
-printerSel.addEventListener('change', () => {
-  // Pārrēķina laiku un cenu, ja modelis jau ielādēts.
-  if (lastResult) renderResults(lastResult);
+materialSelWs.addEventListener('change', () => {
+  materialKey = materialSelWs.value;
+  materialSel.value = materialKey;
+  renderPrice();
 });
 
-let lastResult = null;
+qtyMinus.addEventListener('click', () => setQuantity((getActive() ? getActive().quantity : 1) - 1));
+qtyPlus.addEventListener('click', () => setQuantity((getActive() ? getActive().quantity : 1) + 1));
+qtyEl.addEventListener('change', () => setQuantity(parseInt(qtyEl.value, 10) || 1));
+
+function setQuantity(value) {
+  const part = getActive();
+  if (!part) return;
+  part.quantity = Math.min(999, Math.max(1, value));
+  qtyEl.value = part.quantity;
+  renderPartsList();
+  renderPrice();
+}
+
+colorEl.addEventListener('input', () => {
+  const part = getActive();
+  if (!part) return;
+  part.color = colorEl.value;
+  part.material.color.set(part.color);
+  colorHexEl.textContent = part.color.toUpperCase();
+});
+
+// Sākotnējais stāvoklis
+updateUploadStatus();
+renderPartsList();
+renderPrice();
