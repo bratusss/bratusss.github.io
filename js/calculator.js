@@ -128,7 +128,7 @@ controls.touches = {
   ONE: THREE.TOUCH.ROTATE,
   TWO: THREE.TOUCH.DOLLY_PAN
 };
-controls.zoomToCursor = true;
+controls.zoomToCursor = false;
 controls.screenSpacePanning = true;
 
 scene.add(new THREE.AmbientLight(0xffffff, 0.85));
@@ -575,8 +575,10 @@ function updateViewCube() {
 function flyToDir(dir, up) {
   const v = new THREE.Vector3(dir[0], dir[1], dir[2]);
   if (v.lengthSq() < 1e-6) return;
+  // Vienmēr centrē skatu uz objekta centru (oriģināli).
+  controls.target.set(0, 0, 0);
   // Saglabā esošo attālumu (bez zoom efekta).
-  const dist = camera.position.distanceTo(controls.target) || VIEW_DIST;
+  const dist = camera.position.length() || VIEW_DIST;
   v.normalize().multiplyScalar(dist);
   // Izvairās no degenerācijas, kad skats ir tieši virs/apakš.
   if (Math.hypot(v.x, v.z) < 0.001) v.x = 0.0001 * dist;
@@ -591,7 +593,8 @@ function flyToDir(dir, up) {
 }
 
 function flyToPos(pos, up) {
-  const dist = camera.position.distanceTo(controls.target) || VIEW_DIST;
+  controls.target.set(0, 0, 0);
+  const dist = camera.position.length() || VIEW_DIST;
   const to = new THREE.Vector3().copy(pos).normalize().multiplyScalar(dist);
   fly = {
     fromPos: camera.position.clone(),
