@@ -690,8 +690,17 @@ function colorName(hex) {
   return (c ? c.name : hex) + ' (' + hex.toUpperCase() + ')';
 }
 
-function buildOrderText(link) {
+function buildOrderText() {
   const lines = ['3D drukas pasūtījums — 3dpakalpojumi.lv', ''];
+  const name = orderName.value.trim();
+  const email = orderEmail.value.trim();
+  const phone = orderPhone.value.trim();
+  const link = orderLink.value.trim();
+  lines.push('Klients: ' + (name || '—'));
+  lines.push('E-pasts: ' + (email || '—'));
+  if (phone) lines.push('Tālrunis: ' + phone);
+  if (link) lines.push('3D modeļa saite: ' + link);
+  lines.push('');
   parts.forEach((p, i) => {
     const e = estimatePart(p);
     lines.push((i + 1) + '. ' + p.fileName);
@@ -702,10 +711,6 @@ function buildOrderText(link) {
     lines.push('   Cena: ' + (e.total * p.quantity).toFixed(2) + ' €');
     lines.push('');
   });
-  if (link) {
-    lines.push('3D modeļa saite: ' + link);
-    lines.push('');
-  }
   const total = parts.reduce((s, p) => s + estimatePart(p).total * p.quantity, 0);
   lines.push('KOPĀ (bez PVN): ' + total.toFixed(2) + ' €');
   return lines.join('\n');
@@ -752,13 +757,15 @@ document.addEventListener('keydown', (e) => {
 orderForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const fd = new FormData();
+  const email = orderEmail.value.trim();
   fd.append('name', orderName.value.trim());
-  fd.append('email', orderEmail.value.trim());
+  fd.append('email', email);
+  fd.append('_replyto', email);
+  fd.append('_subject', '3D drukas pasūtījums — ' + (orderName.value.trim() || 'bez vārda'));
   fd.append('phone', orderPhone.value.trim());
-  const link = orderLink.value.trim();
-  fd.append('link', link);
+  fd.append('link', orderLink.value.trim());
   fd.append('message', orderMessage.value.trim());
-  fd.append('order', buildOrderText(link));
+  fd.append('order', buildOrderText());
   parts.forEach((p) => {
     if (p.file) fd.append('file', p.file, p.fileName);
   });
