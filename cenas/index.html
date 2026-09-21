@@ -313,13 +313,50 @@
 
     <div class="calc-price-bar">
       <button class="calc-btn-ghost" id="calc-back" type="button">← Atpakaļ</button>
-      <div class="calc-price-total">
-        <span>Kopā · bez PVN</span>
-        <strong id="calc-total">0.00 €</strong>
+      <div class="calc-price-right">
+        <div class="calc-price-total">
+          <span>Kopā · bez PVN</span>
+          <strong id="calc-total">0.00 €</strong>
+        </div>
+        <button class="calc-btn-primary calc-order-btn" id="calc-order-btn" type="button">Pieteikt pasūtījumu</button>
       </div>
     </div>
   </div>
 </section>
+
+<!-- PASŪTĪJUMA MODĀLS -->
+<div class="calc-modal-overlay" id="calc-order-modal" hidden>
+  <div class="calc-modal" role="dialog" aria-modal="true" aria-labelledby="calc-order-title">
+    <button class="calc-modal-close" id="calc-order-close" type="button" aria-label="Aizvērt">×</button>
+    <h3 id="calc-order-title">Pieteikt pasūtījumu</h3>
+    <p class="calc-modal-sub">Aizpildi kontaktus — mēs saņemsim tavus 3D failus un atbildēsim ar precīzu cenu.</p>
+
+    <div class="calc-order-summary" id="calc-order-summary"></div>
+
+    <form id="calc-order-form" novalidate>
+      <div class="calc-form-grid">
+        <div class="calc-field">
+          <label class="form-label" for="calc-order-name">Vārds</label>
+          <input class="calc-input" id="calc-order-name" name="name" type="text" autocomplete="name" required>
+        </div>
+        <div class="calc-field">
+          <label class="form-label" for="calc-order-email">E-pasts</label>
+          <input class="calc-input" id="calc-order-email" name="email" type="email" autocomplete="email" required>
+        </div>
+      </div>
+      <div class="calc-field">
+        <label class="form-label" for="calc-order-phone">Tālrunis</label>
+        <input class="calc-input" id="calc-order-phone" name="phone" type="tel" autocomplete="tel">
+      </div>
+      <div class="calc-field">
+        <label class="form-label" for="calc-order-message">Komentārs</label>
+        <textarea class="calc-input" id="calc-order-message" name="message" rows="3"></textarea>
+      </div>
+      <button type="submit" class="calc-btn-primary calc-order-submit" id="calc-order-submit">Nosūtīt pasūtījumu</button>
+      <div class="calc-form-status" id="calc-order-status" role="status" aria-live="polite"></div>
+    </form>
+  </div>
+</div>
 
 </main>
 

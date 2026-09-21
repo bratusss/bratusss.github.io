@@ -61,6 +61,7 @@ const PALETTE = [
 ];
 
 const DEFAULT_COLOR = '#4b6d9c'; // Storm Blue
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xqpaqkkk';
 
 const MATERIALS = {
   pla: { label: 'PLA', density: 1.24, price: 17 },
@@ -94,12 +95,24 @@ const colorSwatchesEl = document.getElementById('calc-color-swatches');
 const colorLabelEl = document.getElementById('calc-color-label');
 const partSummaryEl = document.getElementById('calc-part-summary');
 const totalEl = document.getElementById('calc-total');
+const orderBtn = document.getElementById('calc-order-btn');
+const orderModal = document.getElementById('calc-order-modal');
+const orderClose = document.getElementById('calc-order-close');
+const orderForm = document.getElementById('calc-order-form');
+const orderSummaryEl = document.getElementById('calc-order-summary');
+const orderStatusEl = document.getElementById('calc-order-status');
+const orderSubmit = document.getElementById('calc-order-submit');
+const orderName = document.getElementById('calc-order-name');
+const orderEmail = document.getElementById('calc-order-email');
+const orderPhone = document.getElementById('calc-order-phone');
+const orderMessage = document.getElementById('calc-order-message');
 
 if ([
   uploadScreen, workspaceScreen, dropzone, fileInput, fileInputMore, uploadStatus,
   seePriceBtn, backBtn, addPartBtn, partsListEl, viewerEl, hintEl,
   materialSel, materialSelWs, qtyEl, qtyMinus, qtyPlus, colorSwatchesEl, colorLabelEl,
-  partSummaryEl, totalEl
+  partSummaryEl, totalEl, orderBtn, orderModal, orderClose, orderForm, orderSummaryEl,
+  orderStatusEl, orderSubmit, orderName, orderEmail, orderPhone, orderMessage
 ].some((el) => !el)) {
   throw new Error('Kalkulatora elementi nav atrasti.');
 }
@@ -278,6 +291,7 @@ async function addPart(file) {
     const part = {
       id: ++seq,
       fileName: file.name,
+      file: file,
       object: object,
       material: material,
       result: result,
@@ -620,6 +634,106 @@ function flyToCorner(which) {
   else dir = [f[0] - t[0], f[1] - t[1], f[2] - t[2]];
   flyToDir(dir, [0, 1, 0]);
 }
+
+// ---------- Pasūtījuma modāls ----------
+function colorName(hex) {
+  const c = PALETTE.find((x) => x.hex.toUpperCase() === hex.toUpperCase());
+  return (c ? c.name : hex) + ' (' + hex.toUpperCase() + ')';
+}
+
+function buildOrderText() {
+  const lines = ['3D drukas pasūtījums — 3dpakalpojumi.lv', ''];
+  parts.forEach((p, i) => {
+    const e = estimatePart(p);
+    lines.push((i + 1) + '. ' + p.fileName);
+    lines.push('   Izmēri: ' + formatDims(p.result));
+    lines.push('   Krāsa: ' + colorName(p.color));
+    lines.push('   Materiāls: ' + e.label);
+    lines.push('   Daudzums: ' + p.quantity);
+    lines.push('   Cena: ' + (e.total * p.quantity).toFixed(2) + ' €');
+    lines.push('');
+  });
+  const total = parts.reduce((s, p) => s + estimatePart(p).total * p.quantity, 0);
+  lines.push('KOPĀ (bez PVN): ' + total.toFixed(2) + ' €');
+  return lines.join('\n');
+}
+
+function renderOrderSummary() {
+  const items = parts.map((p) => {
+    const e = estimatePart(p);
+    return '<div class="calc-order-item">' +
+      '<div><strong>' + escapeHtml(p.fileName) + '</strong> · ×' + p.quantity + '</div>' +
+      '<div>' + formatDims(p.result) + ' · ' + colorName(p.color) + ' · ' + e.label + '</div>' +
+      '<div>' + (e.total * p.quantity).toFixed(2) + ' €</div>' +
+      '</div>';
+  }).join('');
+  const total = parts.reduce((s, p) => s + estimatePart(p).total * p.quantity, 0);
+  orderSummaryEl.innerHTML = items +
+    '<div class="calc-order-total">Kopā: <strong>' + total.toFixed(2) + ' €</strong> <span>· bez PVN</span></div>';
+}
+
+function openOrderModal() {
+  if (!parts.length) return;
+  renderOrderSummary();
+  orderModal.hidden = false;
+  document.body.style.overflow = 'hidden';
+  orderStatusEl.className = 'calc-form-status';
+  orderStatusEl.textContent = '';
+  orderForm.reset();
+}
+
+function closeOrderModal() {
+  orderModal.hidden = true;
+  document.body.style.overflow = '';
+}
+
+orderBtn.addEventListener('click', openOrderModal);
+orderClose.addEventListener('click', closeOrderModal);
+orderModal.addEventListener('click', (e) => {
+  if (e.target === orderModal) closeOrderModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !orderModal.hidden) closeOrderModal();
+});
+
+orderForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData();
+  fd.append('name', orderName.value.trim());
+  fd.append('email', orderEmail.value.trim());
+  fd.append('phone', orderPhone.value.trim());
+  fd.append('message', orderMessage.value.trim());
+  fd.append('order', buildOrderText());
+  parts.forEach((p) => {
+    if (p.file) fd.append('file', p.file, p.fileName);
+  });
+
+  orderSubmit.disabled = true;
+  orderSubmit.textContent = 'Sūta…';
+  orderStatusEl.className = 'calc-form-status';
+  orderStatusEl.textContent = '';
+
+  try {
+    const res = await fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      body: fd,
+      headers: { 'Accept': 'application/json' }
+    });
+    if (res.ok) {
+      orderStatusEl.className = 'calc-form-status ok';
+      orderStatusEl.textContent = 'Paldies! Pasūtījums nosūtīts — atbildēsim 24h laikā.';
+      orderForm.reset();
+    } else {
+      throw new Error('HTTP ' + res.status);
+    }
+  } catch (err) {
+    orderStatusEl.className = 'calc-form-status err';
+    orderStatusEl.textContent = 'Kļūda nosūtot. Raksti tieši: razosana@bratus.lv';
+  }
+
+  orderSubmit.disabled = false;
+  orderSubmit.textContent = 'Nosūtīt pasūtījumu';
+});
 
 // ---------- Ekrānu pārslēgšana ----------
 function showWorkspace() {
