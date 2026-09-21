@@ -207,8 +207,8 @@ renderer.setAnimationLoop((time) => {
     if (t >= 1) fly = null;
   }
   controls.update();
-  updateViewCube();
   renderer.render(scene, camera);
+  renderViewCube();
 });
 
 // ---------- Ģeometrijas iegūšana ----------
@@ -512,78 +512,141 @@ function escapeHtml(s) {
   }[c]));
 }
 
-// ---------- Skata navigācijas kubs ----------
+// ---------- 3D skata navigācijas kubs ----------
 const VIEW_DIST = 110;
-const SVG_NS = 'http://www.w3.org/2000/svg';
-let fly = null;
-let viewCube = null;
-let cubeDirs = { front: [0, 0, 1], right: [1, 0, 0], top: [0, 1, 0] };
 const HOME_POS = new THREE.Vector3(90, 70, 130);
+let fly = null;
+let helperRenderer = null;
 
-function svgEl(tag, attrs) {
-  const el = document.createElementNS(SVG_NS, tag);
-  for (const k in attrs) el.setAttribute(k, attrs[k]);
-  return el;
+const HELPER_SIZE = 96;   // CSS px
+const HELPER_PAD = 16;    // CSS px
+
+const FACE_DIRS = {
+  posX: [1, 0, 0], negX: [-1, 0, 0],
+  posY: [0, 1, 0], negY: [0, -1, 0],
+  posZ: [0, 0, 1], negZ: [0, 0, -1]
+};
+const FACE_LABELS = {
+  posX: 'RIGHT', negX: 'LEFT',
+  posY: 'TOP', negY: 'BOTTOM',
+  posZ: 'FRONT', negZ: 'BACK'
+};
+
+const viewCubeScene = new THREE.Scene();
+const viewCubeCamera = new THREE.OrthographicCamera(-1.5, 1.5, 1.5, -1.5, 0.1, 10);
+viewCubeCamera.up.set(0, 1, 0);
+viewCubeCamera.position.set(0, 0, 3);
+viewCubeCamera.lookAt(0, 0, 0);
+viewCubeCamera.updateMatrixWorld(true);
+
+const viewCubeGroup = new THREE.Group();
+viewCubeScene.add(viewCubeGroup);
+
+const helperRaycaster = new THREE.Raycaster();
+const helperMouse = new THREE.Vector2();
+const helperViewDir = new THREE.Vector3();
+const interactiveObjects = [];
+
+function makeFaceSprite(type) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 128;
+  canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+  ctx.font = 'bold 34px Inter, Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#1f1501';
+  ctx.fillText(FACE_LABELS[type], 64, 64);
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: new THREE.CanvasTexture(canvas),
+    transparent: true,
+    depthTest: true,
+    depthWrite: false
+  }));
+  sprite.scale.setScalar(0.78);
+  sprite.userData.type = type;
+  const d = FACE_DIRS[type];
+  sprite.position.set(d[0], d[1], d[2]);
+  return sprite;
 }
 
 function initViewCube() {
-  viewCube = {};
-  const svg = svgEl('svg', { 'class': 'calc-view-cube', 'viewBox': '0 0 100 100', 'aria-label': 'Skata navigācijas kubs' });
+  // Kubs ar gaišām skaldnēm un tumšām šķautnēm.
+  const cubeGeo = new THREE.BoxGeometry(1.4, 1.4, 1.4);
+  const cube = new THREE.Mesh(cubeGeo, new THREE.MeshBasicMaterial({ color: 0xf3e9d9 }));
+  const edges = new THREE.LineSegments(
+    new THREE.EdgesGeometry(cubeGeo),
+    new THREE.LineBasicMaterial({ color: 0x2b1d0e })
+  );
+  viewCubeGroup.add(cube);
+  viewCubeGroup.add(edges);
 
-  const faceTop = svgEl('polygon', { 'class': 'cube-face', 'data-face': 'top', 'points': '50,8 84,26 50,42 16,26' });
-  const faceFront = svgEl('polygon', { 'class': 'cube-face', 'data-face': 'front', 'points': '16,26 50,42 50,76 16,58' });
-  const faceRight = svgEl('polygon', { 'class': 'cube-face', 'data-face': 'right', 'points': '84,26 84,58 50,76 50,42' });
+  // Seju etiķetes.
+  Object.keys(FACE_DIRS).forEach((t) => {
+    const s = makeFaceSprite(t);
+    viewCubeGroup.add(s);
+    interactiveObjects.push(s);
+  });
 
-  const corner1 = svgEl('circle', { 'class': 'cube-corner', 'data-corner': 'c1', 'cx': '84', 'cy': '26', 'r': '10' });
-  const corner2 = svgEl('circle', { 'class': 'cube-corner', 'data-corner': 'c2', 'cx': '16', 'cy': '26', 'r': '10' });
-  const corner3 = svgEl('circle', { 'class': 'cube-corner', 'data-corner': 'c3', 'cx': '50', 'cy': '76', 'r': '10' });
-  const center = svgEl('circle', { 'class': 'cube-center', 'data-center': 'home', 'cx': '50', 'cy': '42', 'r': '8' });
+  // Stūri (izo skati).
+  const cornerGeo = new THREE.SphereGeometry(0.13, 12, 12);
+  const cornerMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  [-1, 1].forEach((sx) => [-1, 1].forEach((sy) => [-1, 1].forEach((sz) => {
+    const c = new THREE.Mesh(cornerGeo, cornerMat);
+    c.position.set(sx * 0.72, sy * 0.72, sz * 0.72);
+    c.userData.dir = [sx, sy, sz];
+    viewCubeGroup.add(c);
+    interactiveObjects.push(c);
+  })));
 
-  const labelTop = svgEl('text', { 'class': 'cube-label', 'x': '50', 'y': '27', 'text-anchor': 'middle' });
-  const labelFront = svgEl('text', { 'class': 'cube-label', 'x': '33', 'y': '52', 'text-anchor': 'middle' });
-  const labelRight = svgEl('text', { 'class': 'cube-label', 'x': '67', 'y': '52', 'text-anchor': 'middle' });
+  // Centra mājas punkts.
+  const home = new THREE.Mesh(
+    new THREE.SphereGeometry(0.15, 16, 16),
+    new THREE.MeshBasicMaterial({ color: 0x940fbd, transparent: true, depthTest: false, depthWrite: false })
+  );
+  home.renderOrder = 10;
+  home.userData.home = true;
+  viewCubeGroup.add(home);
+  interactiveObjects.push(home);
 
-  [faceTop, faceFront, faceRight, corner1, corner2, corner3, labelTop, labelFront, labelRight, center]
-    .forEach((el) => svg.appendChild(el));
+  // Atsevišķs mazs canvas kuba zīmēšanai.
+  const helperCanvas = document.createElement('canvas');
+  helperCanvas.className = 'calc-view-cube-canvas';
+  viewerEl.appendChild(helperCanvas);
+  helperRenderer = new THREE.WebGLRenderer({ canvas: helperCanvas, antialias: true, alpha: true });
+  helperRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  helperRenderer.setSize(HELPER_SIZE, HELPER_SIZE, false);
 
-  viewerEl.appendChild(svg);
-
-  faceTop.addEventListener('click', () => flyToFace('top'));
-  faceFront.addEventListener('click', () => flyToFace('front'));
-  faceRight.addEventListener('click', () => flyToFace('right'));
-  corner1.addEventListener('click', () => flyToCorner('c1'));
-  corner2.addEventListener('click', () => flyToCorner('c2'));
-  corner3.addEventListener('click', () => flyToCorner('c3'));
-  center.addEventListener('click', () => flyToPos(HOME_POS, [0, 1, 0]));
-
-  viewCube.labels = { top: labelTop, front: labelFront, right: labelRight };
-  updateViewCube();
+  helperCanvas.addEventListener('pointerdown', (event) => {
+    const rect = helperCanvas.getBoundingClientRect();
+    helperMouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    helperMouse.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
+    helperRaycaster.setFromCamera(helperMouse, viewCubeCamera);
+    const hits = helperRaycaster.intersectObjects(interactiveObjects);
+    if (hits.length) {
+      event.stopPropagation();
+      handleViewCubeHit(hits[0].object);
+    }
+  });
 }
 
-function cubeState() {
-  const d = new THREE.Vector3().subVectors(camera.position, controls.target).normalize();
-  const az = Math.atan2(d.x, d.z);
-  const idx = ((Math.round(az / (Math.PI / 2)) % 4) + 4) % 4;
-  const H = [
-    { name: 'FRONT', n: [0, 0, 1] },
-    { name: 'RIGHT', n: [1, 0, 0] },
-    { name: 'BACK', n: [0, 0, -1] },
-    { name: 'LEFT', n: [-1, 0, 0] }
-  ];
-  return {
-    front: H[idx],
-    right: H[(idx + 1) % 4],
-    top: d.y >= 0 ? { name: 'TOP', n: [0, 1, 0] } : { name: 'BOTTOM', n: [0, -1, 0] }
-  };
+function handleViewCubeHit(obj) {
+  if (obj.userData.home) {
+    flyToPos(HOME_POS, [0, 1, 0]);
+  } else if (obj.userData.type) {
+    flyToDir(FACE_DIRS[obj.userData.type], [0, 1, 0]);
+  } else if (obj.userData.dir) {
+    flyToDir(obj.userData.dir, [0, 1, 0]);
+  }
 }
 
-function updateViewCube() {
-  if (!viewCube) return;
-  const s = cubeState();
-  viewCube.labels.top.textContent = s.top.name;
-  viewCube.labels.front.textContent = s.front.name;
-  viewCube.labels.right.textContent = s.right.name;
-  cubeDirs = { front: s.front.n, right: s.right.n, top: s.top.n };
+function renderViewCube() {
+  helperViewDir.subVectors(camera.position, controls.target).normalize();
+  if (Math.hypot(helperViewDir.x, helperViewDir.z) < 0.01) helperViewDir.x = 0.01;
+  viewCubeCamera.position.copy(helperViewDir).multiplyScalar(3);
+  viewCubeCamera.lookAt(0, 0, 0);
+  viewCubeCamera.updateMatrixWorld(true);
+  if (helperRenderer) helperRenderer.render(viewCubeScene, viewCubeCamera);
 }
 
 function flyToDir(dir, up) {
@@ -618,21 +681,6 @@ function flyToPos(pos, up) {
     startTime: performance.now(),
     duration: 380
   };
-}
-
-function flyToFace(which) {
-  flyToDir(cubeDirs[which], [0, 1, 0]);
-}
-
-function flyToCorner(which) {
-  const f = cubeDirs.front;
-  const r = cubeDirs.right;
-  const t = cubeDirs.top;
-  let dir;
-  if (which === 'c1') dir = [f[0] + r[0] + t[0], f[1] + r[1] + t[1], f[2] + r[2] + t[2]];
-  else if (which === 'c2') dir = [f[0] - r[0] + t[0], f[1] - r[1] + t[1], f[2] - r[2] + t[2]];
-  else dir = [f[0] - t[0], f[1] - t[1], f[2] - t[2]];
-  flyToDir(dir, [0, 1, 0]);
 }
 
 // ---------- Pasūtījuma modāls ----------
