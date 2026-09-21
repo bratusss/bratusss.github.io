@@ -105,6 +105,7 @@ const orderSubmit = document.getElementById('calc-order-submit');
 const orderName = document.getElementById('calc-order-name');
 const orderEmail = document.getElementById('calc-order-email');
 const orderPhone = document.getElementById('calc-order-phone');
+const orderLink = document.getElementById('calc-order-link');
 const orderMessage = document.getElementById('calc-order-message');
 
 if ([
@@ -112,7 +113,7 @@ if ([
   seePriceBtn, backBtn, addPartBtn, partsListEl, viewerEl, hintEl,
   materialSel, materialSelWs, qtyEl, qtyMinus, qtyPlus, colorSwatchesEl, colorLabelEl,
   partSummaryEl, totalEl, orderBtn, orderModal, orderClose, orderForm, orderSummaryEl,
-  orderStatusEl, orderSubmit, orderName, orderEmail, orderPhone, orderMessage
+  orderStatusEl, orderSubmit, orderName, orderEmail, orderPhone, orderLink, orderMessage
 ].some((el) => !el)) {
   throw new Error('Kalkulatora elementi nav atrasti.');
 }
@@ -689,7 +690,7 @@ function colorName(hex) {
   return (c ? c.name : hex) + ' (' + hex.toUpperCase() + ')';
 }
 
-function buildOrderText() {
+function buildOrderText(link) {
   const lines = ['3D drukas pasūtījums — 3dpakalpojumi.lv', ''];
   parts.forEach((p, i) => {
     const e = estimatePart(p);
@@ -701,6 +702,10 @@ function buildOrderText() {
     lines.push('   Cena: ' + (e.total * p.quantity).toFixed(2) + ' €');
     lines.push('');
   });
+  if (link) {
+    lines.push('3D modeļa saite: ' + link);
+    lines.push('');
+  }
   const total = parts.reduce((s, p) => s + estimatePart(p).total * p.quantity, 0);
   lines.push('KOPĀ (bez PVN): ' + total.toFixed(2) + ' €');
   return lines.join('\n');
@@ -750,8 +755,10 @@ orderForm.addEventListener('submit', async (e) => {
   fd.append('name', orderName.value.trim());
   fd.append('email', orderEmail.value.trim());
   fd.append('phone', orderPhone.value.trim());
+  const link = orderLink.value.trim();
+  fd.append('link', link);
   fd.append('message', orderMessage.value.trim());
-  fd.append('order', buildOrderText());
+  fd.append('order', buildOrderText(link));
   parts.forEach((p) => {
     if (p.file) fd.append('file', p.file, p.fileName);
   });
