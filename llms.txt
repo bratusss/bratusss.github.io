@@ -33,10 +33,10 @@ Mēs esam SIA Bratus — Latvijā bāzēts 3D drukas un modelēšanas serviss ar
 
 ## Saites
 - [Sākums](https://3dpakalpojumi.lv/)
-- [Pakalpojumi](https://3dpakalpojumi.lv/pakalpojumi.html)
-- [Projekti](https://3dpakalpojumi.lv/projekti.html)
-- [Cenas](https://3dpakalpojumi.lv/cenas.html)
-- [FAQ](https://3dpakalpojumi.lv/faq.html)
-- [Kontakti](https://3dpakalpojumi.lv/kontakts.html)
+- [Pakalpojumi](https://3dpakalpojumi.lv/pakalpojumi/)
+- [Projekti](https://3dpakalpojumi.lv/projekti/)
+- [Cenas](https://3dpakalpojumi.lv/cenas/)
+- [FAQ](https://3dpakalpojumi.lv/faq/)
+- [Kontakti](https://3dpakalpojumi.lv/kontakts/)
 - [bratus.lv](https://bratus.lv)
 - [3D Filamenti](https://bratus.lv/collections/3d-filamenti)
