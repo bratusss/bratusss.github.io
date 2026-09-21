@@ -504,6 +504,7 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 let fly = null;
 let viewCube = null;
 let cubeDirs = { front: [0, 0, 1], right: [1, 0, 0], top: [0, 1, 0] };
+const HOME_POS = new THREE.Vector3(90, 70, 130);
 
 function svgEl(tag, attrs) {
   const el = document.createElementNS(SVG_NS, tag);
@@ -522,12 +523,13 @@ function initViewCube() {
   const corner1 = svgEl('circle', { 'class': 'cube-corner', 'data-corner': 'c1', 'cx': '84', 'cy': '26', 'r': '10' });
   const corner2 = svgEl('circle', { 'class': 'cube-corner', 'data-corner': 'c2', 'cx': '16', 'cy': '26', 'r': '10' });
   const corner3 = svgEl('circle', { 'class': 'cube-corner', 'data-corner': 'c3', 'cx': '50', 'cy': '76', 'r': '10' });
+  const center = svgEl('circle', { 'class': 'cube-center', 'data-center': 'home', 'cx': '50', 'cy': '42', 'r': '8' });
 
   const labelTop = svgEl('text', { 'class': 'cube-label', 'x': '50', 'y': '27', 'text-anchor': 'middle' });
   const labelFront = svgEl('text', { 'class': 'cube-label', 'x': '33', 'y': '52', 'text-anchor': 'middle' });
   const labelRight = svgEl('text', { 'class': 'cube-label', 'x': '67', 'y': '52', 'text-anchor': 'middle' });
 
-  [faceTop, faceFront, faceRight, corner1, corner2, corner3, labelTop, labelFront, labelRight]
+  [faceTop, faceFront, faceRight, corner1, corner2, corner3, labelTop, labelFront, labelRight, center]
     .forEach((el) => svg.appendChild(el));
 
   viewerEl.appendChild(svg);
@@ -538,6 +540,7 @@ function initViewCube() {
   corner1.addEventListener('click', () => flyToCorner('c1'));
   corner2.addEventListener('click', () => flyToCorner('c2'));
   corner3.addEventListener('click', () => flyToCorner('c3'));
+  center.addEventListener('click', () => flyToPos(HOME_POS, [0, 1, 0]));
 
   viewCube.labels = { top: labelTop, front: labelFront, right: labelRight };
   updateViewCube();
@@ -572,12 +575,27 @@ function updateViewCube() {
 function flyToDir(dir, up) {
   const v = new THREE.Vector3(dir[0], dir[1], dir[2]);
   if (v.lengthSq() < 1e-6) return;
-  v.normalize().multiplyScalar(VIEW_DIST);
+  // Saglabā esošo attālumu (bez zoom efekta).
+  const dist = camera.position.distanceTo(controls.target) || VIEW_DIST;
+  v.normalize().multiplyScalar(dist);
   // Izvairās no degenerācijas, kad skats ir tieši virs/apakš.
-  if (Math.hypot(v.x, v.z) < 0.001) v.x = 0.0001 * VIEW_DIST;
+  if (Math.hypot(v.x, v.z) < 0.001) v.x = 0.0001 * dist;
   fly = {
     fromPos: camera.position.clone(),
     toPos: v,
+    fromUp: camera.up.clone(),
+    toUp: new THREE.Vector3(up[0], up[1], up[2]).normalize(),
+    startTime: performance.now(),
+    duration: 380
+  };
+}
+
+function flyToPos(pos, up) {
+  const dist = camera.position.distanceTo(controls.target) || VIEW_DIST;
+  const to = new THREE.Vector3().copy(pos).normalize().multiplyScalar(dist);
+  fly = {
+    fromPos: camera.position.clone(),
+    toPos: to,
     fromUp: camera.up.clone(),
     toUp: new THREE.Vector3(up[0], up[1], up[2]).normalize(),
     startTime: performance.now(),

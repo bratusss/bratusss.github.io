@@ -1463,6 +1463,14 @@ footer {
   transition: fill 0.15s;
 }
 .calc-view-cube .cube-corner:hover { fill: var(--accent); }
+.calc-view-cube .cube-center {
+  fill: #fff;
+  stroke: #3a3a3a;
+  stroke-width: 1.5;
+  cursor: pointer;
+  transition: fill 0.15s;
+}
+.calc-view-cube .cube-center:hover { fill: var(--accent); }
 .calc-view-cube .cube-label {
   font-family: 'Inter', sans-serif;
   font-size: 7.5px;
