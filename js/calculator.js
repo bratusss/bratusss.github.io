@@ -61,7 +61,6 @@ const PALETTE = [
 ];
 
 const DEFAULT_COLOR = '#4b6d9c'; // Storm Blue
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xqpaqkkk';
 
 const MATERIALS = {
   pla: { label: 'PLA', density: 1.24, price: 17 },
@@ -691,11 +690,12 @@ function colorName(hex) {
 }
 
 function buildOrderText() {
-  const lines = ['3D drukas pasūtījums — 3dpakalpojumi.lv', ''];
+  const lines = ['Avots: 3dpakalpojumi.lv', ''];
   const name = orderName.value.trim();
   const email = orderEmail.value.trim();
   const phone = orderPhone.value.trim();
   const link = orderLink.value.trim();
+  const comment = orderMessage.value.trim();
   lines.push('Klients: ' + (name || '—'));
   lines.push('E-pasts: ' + (email || '—'));
   if (phone) lines.push('Tālrunis: ' + phone);
@@ -713,6 +713,10 @@ function buildOrderText() {
   });
   const total = parts.reduce((s, p) => s + estimatePart(p).total * p.quantity, 0);
   lines.push('KOPĀ (bez PVN): ' + total.toFixed(2) + ' €');
+  if (comment) {
+    lines.push('');
+    lines.push('Komentārs: ' + comment);
+  }
   return lines.join('\n');
 }
 
@@ -756,19 +760,9 @@ document.addEventListener('keydown', (e) => {
 
 orderForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const fd = new FormData();
+  const name = orderName.value.trim();
   const email = orderEmail.value.trim();
-  fd.append('name', orderName.value.trim());
-  fd.append('email', email);
-  fd.append('_replyto', email);
-  fd.append('_subject', '3D drukas pasūtījums — ' + (orderName.value.trim() || 'bez vārda'));
-  fd.append('phone', orderPhone.value.trim());
-  fd.append('link', orderLink.value.trim());
-  fd.append('message', orderMessage.value.trim());
-  fd.append('order', buildOrderText());
-  parts.forEach((p) => {
-    if (p.file) fd.append('file', p.file, p.fileName);
-  });
+  const message = buildOrderText();
 
   orderSubmit.disabled = true;
   orderSubmit.textContent = 'Sūta…';
@@ -776,10 +770,10 @@ orderForm.addEventListener('submit', async (e) => {
   orderStatusEl.textContent = '';
 
   try {
-    const res = await fetch(FORMSPREE_ENDPOINT, {
+    const res = await fetch('https://shopforms.vercel.app/api/send-email', {
       method: 'POST',
-      body: fd,
-      headers: { 'Accept': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, message, form_identifier: 'manufacturing' })
     });
     if (res.ok) {
       orderStatusEl.className = 'calc-form-status ok';
@@ -790,7 +784,7 @@ orderForm.addEventListener('submit', async (e) => {
     }
   } catch (err) {
     orderStatusEl.className = 'calc-form-status err';
-    orderStatusEl.textContent = 'Kļūda nosūtot. Raksti tieši: razosana@bratus.lv';
+    orderStatusEl.textContent = 'Kļūda nosūtot. Rakstiet tieši: razosana@bratus.lv';
   }
 
   orderSubmit.disabled = false;
