@@ -1944,8 +1944,12 @@ footer {
             <input class="finput" type="tel" id="iphone" placeholder="+371 20 000 000">
           </div>
           <div class="fg">
-            <label class="form-label" for="imsg">Project description + file link (if any) *</label>
-            <textarea class="ftextarea" id="imsg" placeholder="Describe your project. If you have an STL/STEP file, include a Google Drive link..." required></textarea>
+            <label class="form-label" for="ilink">3D model link (Google Drive, Dropbox or failiem.lv)</label>
+            <input class="finput" type="url" id="ilink" placeholder="https://drive.google.com/…">
+          </div>
+          <div class="fg">
+            <label class="form-label" for="imsg">Project description *</label>
+            <textarea class="ftextarea" id="imsg" placeholder="Describe your project..." required></textarea>
           </div>
           <button type="submit" class="btn-submit" id="sbtn">
             Send request
@@ -2162,8 +2166,9 @@ document.getElementById('cf').addEventListener('submit', async function(e) {
   const name = document.getElementById('iname').value;
   const email = document.getElementById('iemail').value;
   const phone = document.getElementById('iphone').value;
+  const link = document.getElementById('ilink').value;
   const msg = document.getElementById('imsg').value;
-  const full = `Source: 3dpakalpojumi.lv\nFilament: ${fil}\nColor: ${col}\nPhone: ${phone || 'not provided'}\n\nProject:\n${msg}`;
+  const full = `Source: 3dpakalpojumi.lv\nFilament: ${fil}\nColor: ${col}\nPhone: ${phone || 'not provided'}\nModel link: ${link || 'not provided'}\n\nProject:\n${msg}`;
   btn.disabled = true; btn.textContent = 'Sending...';
   try {
     const r = await fetch('https://shopforms.vercel.app/api/send-email', {

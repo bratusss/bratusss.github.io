@@ -86,8 +86,9 @@ if (form) {
     var name = document.getElementById('iname').value;
     var email = document.getElementById('iemail').value;
     var phone = document.getElementById('iphone').value;
+    var link = document.getElementById('ilink').value;
     var msg = document.getElementById('imsg').value;
-    var full = 'Avots: 3dpakalpojumi.lv\nFilaments: ' + fil + '\nKrāsa: ' + col + '\nTālrunis: ' + (phone || 'nav norādīts') + '\n\nProjekts:\n' + msg;
+    var full = 'Avots: 3dpakalpojumi.lv\nFilaments: ' + fil + '\nKrāsa: ' + col + '\nTālrunis: ' + (phone || 'nav norādīts') + '\n3D modeļa saite: ' + (link || 'nav norādīta') + '\n\nProjekts:\n' + msg;
 
     btn.disabled = true;
     btn.textContent = 'Sūta...';
