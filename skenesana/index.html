@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Skenēšana — Objektu Digitalizācija | 3D Pakalpojumi Latvijā</title>
+<meta name="description" content="3D skenēšana Latvijā — fizisku objektu pārvēršana digitālos 3D modeļos. Reverse engineering, rezerves daļas, arhivēšana. Rezultāts STL/OBJ/STEP formātā.">
+<meta name="author" content="SIA Bratus">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<meta name="google-site-verification" content="r5uT2gqX_KhXH3KyXcMcXesVmDQVjq7C5DZK6U0dUq0" />
+<link rel="canonical" href="https://3dpakalpojumi.lv/skenesana/">
+<link rel="icon" type="image/png" href="/favicon.png">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://3dpakalpojumi.lv/skenesana/">
+<meta property="og:title" content="3D Skenēšana — Objektu Digitalizācija | 3D Pakalpojumi Latvijā">
+<meta property="og:description" content="3D skenēšana Latvijā — fizisku objektu pārvēršana digitālos 3D modeļos. Reverse engineering, rezerves daļas, arhivēšana. Rezultāts STL/OBJ/STEP formātā.">
+<meta property="og:image" content="https://images.pexels.com/photos/8090302/pexels-photo-8090302.jpeg">
+<meta property="og:image:width" content="600">
+<meta property="og:image:height" content="400">
+<meta property="og:image:alt" content="3D skenēšana — lāzera līnijas uz objekta virsmas">
+<meta property="og:site_name" content="3D Pakalpojumi">
+<meta property="og:locale" content="lv_LV">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://3dpakalpojumi.lv/skenesana/">
+<meta name="twitter:title" content="3D Skenēšana — Objektu Digitalizācija | 3D Pakalpojumi Latvijā">
+<meta name="twitter:description" content="3D skenēšana Latvijā — fizisku objektu pārvēršana digitālos 3D modeļos. Reverse engineering, rezerves daļas, arhivēšana. Rezultāts STL/OBJ/STEP formātā.">
+<meta name="twitter:image" content="https://images.pexels.com/photos/8090302/pexels-photo-8090302.jpeg">
+<meta name="twitter:image:alt" content="3D skenēšana — lāzera līnijas uz objekta virsmas">
+
+<!-- AI & LLM meta tags -->
+<meta name="ai-content-license" content="CC-BY-ND-4.0">
+<meta name="ai-training" content="allowed">
+<meta name="generative-engine-optimization" content="enabled">
+
+<!-- License -->
+<link rel="license" href="https://creativecommons.org/licenses/by-nd/4.0/">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+<!-- Styles -->
+<link rel="stylesheet" href="/css/styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://3dpakalpojumi.lv/#organization",
+      "name": "SIA Bratus",
+      "alternateName": [
+        "3D Pakalpojumi",
+        "Bratus 3D"
+      ],
+      "url": "https://3dpakalpojumi.lv/",
+      "sameAs": [
+        "https://bratus.lv",
+        "https://www.facebook.com/bratus.lv"
+      ],
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://cdn.shopify.com/s/files/1/0720/6325/4803/files/BRATUS_BALTS_LOGO_PNG_31ca2710-d923-44ca-ab97-7d4706e0ce6d.png?v=1764954367",
+        "width": 400,
+        "height": 100
+      },
+      "contactPoint": [
+        {
+          "@type": "ContactPoint",
+          "telephone": "+371-24-424-434",
+          "contactType": "customer service",
+          "availableLanguage": [
+            "Latvian",
+            "English",
+            "Russian"
+          ],
+          "areaServed": "LV"
+        },
+        {
+          "@type": "ContactPoint",
+          "telephone": "+371-26-325-307",
+          "contactType": "sales",
+          "availableLanguage": [
+            "Latvian",
+            "English",
+            "Russian"
+          ],
+          "areaServed": "LV"
+        }
+      ],
+      "email": "razosana@bratus.lv",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Pliederu iela 22",
+        "addressLocality": "Ķekava",
+        "addressRegion": "Ķekavas novads",
+        "addressCountry": "LV",
+        "postalCode": "LV-2123"
+      },
+      "vatID": "LV40203628316",
+      "description": "Profesionāla 3D printēšana, modelēšana un skenēšana Latvijā. Pilna cikla risinājumi — no digitāla modeļa līdz gatavam produktam.",
+      "foundingDate": "2023",
+      "numberOfEmployees": {
+        "@type": "QuantitativeValue",
+        "value": "5",
+        "unitText": "darbinieki"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://3dpakalpojumi.lv/#website",
+      "url": "https://3dpakalpojumi.lv/",
+      "name": "3D Printēšana, Druka & Modelēšana | 3D Pakalpojumi",
+      "description": "Profesionāla 3D printēšana, 3D druka un modelēšana Latvijā. 3D printeris cenas no 3€/h. Bambu Lab printeri, PLA, PETG, ABS, TPU.",
+      "publisher": {
+        "@id": "https://3dpakalpojumi.lv/#organization"
+      },
+      "inLanguage": "lv",
+      "copyrightYear": 2023,
+      "dateModified": "2026-07-15",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://3dpakalpojumi.lv/#pakalpojumi",
+        "query-input": "required name=search_term"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://3dpakalpojumi.lv/skenesana/#webpage",
+      "url": "https://3dpakalpojumi.lv/skenesana/",
+      "name": "3D Skenēšana — Objektu Digitalizācija | 3D Pakalpojumi Latvijā",
+      "description": "3D skenēšana Latvijā — fizisku objektu pārvēršana digitālos 3D modeļos. Reverse engineering, rezerves daļas, arhivēšana. Rezultāts STL/OBJ/STEP formātā.",
+      "isPartOf": {
+        "@id": "https://3dpakalpojumi.lv/#website"
+      },
+      "about": {
+        "@id": "https://3dpakalpojumi.lv/#organization"
+      },
+      "inLanguage": "lv",
+      "author": {
+        "@id": "https://3dpakalpojumi.lv/#organization"
+      },
+      "publisher": {
+        "@id": "https://3dpakalpojumi.lv/#organization"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://3dpakalpojumi.lv/skenesana/#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Sākums",
+          "item": "https://3dpakalpojumi.lv/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "3D Skenēšana",
+          "item": "https://3dpakalpojumi.lv/skenesana/"
+        }
+      ]
+    },
+    {
+      "@type": "Service",
+      "name": "3D Skenēšana",
+      "provider": {
+        "@id": "https://3dpakalpojumi.lv/#organization"
+      },
+      "serviceType": "3D Scanning Service",
+      "areaServed": {
+        "@type": "Country",
+        "name": "LV"
+      },
+      "description": "Fizisku objektu digitalizācija 3D modeļos. Reverse engineering, rezerves daļas, kvalitātes kontrole un arhivēšana. Rezultāts STL/OBJ/STEP formātā."
+    }
+  ]
+}
+</script>
+</head>
+
+<body>
+
+<!-- SKIP TO CONTENT -->
+<a href="#main-content" class="skip-link" id="skip-link">Pāriet uz saturu</a>
+
+<!-- NAV -->
+<nav class="nav" id="main-nav" role="navigation" aria-label="Galvenā navigācija">
+  <div class="nav-logo">
+    <a href="/" aria-label="3D Pakalpojumi — Sākums">
+      <img src="https://cdn.shopify.com/s/files/1/0720/6325/4803/files/BRATUS_BALTS_LOGO_PNG_31ca2710-d923-44ca-ab97-7d4706e0ce6d.png?v=1764954367" alt="Bratus">
+      <div class="nav-logo-text">3D<em>pakalpojumi</em>.lv</div>
+    </a>
+  </div>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="/pakalpojumi/">Pakalpojumi</a></li>
+    <li><a href="/projekti/">Projekti</a></li>
+    <li><a href="/skenesana/" class="active" aria-current="page">3D Skenēšana</a></li>
+    <li><a href="/cenas/">Cenas</a></li>
+    <li><a href="/faq/">FAQ</a></li>
+    <li><a href="/kontakts/">Kontakts</a></li>
+  </ul>
+  <div class="lang-switch" aria-label="Valodas pārslēdzējs">
+    <a href="/" class="active" hreflang="lv" aria-current="page">LV</a>
+    <span class="lang-switch-sep" aria-hidden="true">|</span>
+    <a href="/en/" hreflang="en" lang="en">EN</a>
+  </div>
+  <div class="nav-cta-wrap">
+    <a href="https://bratus.lv" target="_blank" class="btn-nav-ghost">bratus.lv</a>
+    <a href="/kontakts/" class="btn-nav-accent">Pieteikt</a>
+    <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Izvēlne">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main id="main-content">
+
+<!-- BREADCRUMB -->
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/">Sākums</a></li>
+    <li aria-current="page">3D Skenēšana</li>
+  </ol>
+</nav>
+
+<header class="page-header">
+  <div class="section-max">
+    <h1 class="section-title">3D skenēšana</h1>
+  </div>
+</header>
+
+<!-- FEATURES -->
+<section class="section features-section" id="skenesana" aria-labelledby="skenesana-heading">
+  <div class="section-max">
+    <div class="sr">
+      <div class="eyebrow">3D Skenēšanas pakalpojums</div>
+      <h2 class="section-title" id="skenesana-heading">Digitalizējam<br><strong>fiziskos objektus</strong></h2>
+      <p class="section-sub">3D skenēšana ir mūsu jaunākais pakalpojums. Lai uzzinātu sīkāk par iespējām, termiņiem un cenu, sazinieties ar mums — izvērtēsim jūsu objektu individuāli.</p>
+    </div>
+    <div class="feat-rows">
+      <!-- Feature 1: What is 3D scanning -->
+      <div class="feat-row sr">
+        <div class="feat-text">
+          <div class="eyebrow">Kas tas ir</div>
+          <h3 id="kas-ir">No fiziska objekta<br><strong>līdz digitālam modelim</strong></h3>
+          <p>3D skenēšana ir process, kurā reāls objekts tiek uzmērīts un pārvērsts precīzā digitālā 3D modelī. Iegūto modeli var izmantot 3D drukāšanai, tehniskajai modelēšanai, mērījumiem un arhivēšanai.</p>
+          <ul class="feat-list">
+            <li>
+              <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              Digitāla kopija jebkuram fiziskam objektam
+            </li>
+            <li>
+              <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              Rezultāts der 3D drukai, CAD un renderēšanai
+            </li>
+            <li>
+              <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              Noderīgi privātām, ražošanas un industriālām vajadzībām
+            </li>
+          </ul>
+        </div>
+        <figure class="feat-visual sr sr-d2">
+          <img src="https://images.pexels.com/photos/8090302/pexels-photo-8090302.jpeg" alt="3D skenēšana — lāzera līnijas uz objekta virsmas" width="600" height="400" loading="lazy">
+          <figcaption class="feat-chip">
+            <div class="feat-chip-pulse"></div>
+            <div class="feat-chip-txt">Fizisks → digitāls</div>
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- Feature 2: How it works -->
+      <div class="feat-row flip sr">
+        <div class="feat-text">
+          <div class="eyebrow">Process</div>
+          <h3 id="process">Objekts tiek uzmērīts<br><strong>no visiem leņķiem</strong></h3>
+          <p>Objekts tiek skenēts no vairākiem skatu punktiem, lai uztvertu tā formu un virsmu. Pēc tam iegūtie dati tiek apstrādāti programmatūrā — apvienoti vienā modelī, iztīrīti no liekā un sagatavoti tālākai lietošanai.</p>
+          <ul class="feat-list">
+            <li>
+              <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              Objekta sagatavošana un skenēšana
+            </li>
+            <li>
+              <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              Datu apstrāde: savienošana, tīrīšana, izlīdzināšana
+            </li>
+            <li>
+              <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              Gatavs fails STL, OBJ vai STEP formātā
+            </li>
+          </ul>
+        </div>
+        <figure class="feat-visual sr sr-d2">
+          <img src="https://images.pexels.com/photos/8090295/pexels-photo-8090295.jpeg" alt="3D skenēšanas process — objekta virsmas uzmērīšana ar lāzera līnijām" width="600" height="400" loading="lazy">
+          <figcaption class="feat-chip">
+            <div class="feat-chip-pulse"></div>
+            <div class="feat-chip-txt">No skenēšanas līdz failam</div>
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- Feature 3: Use cases -->
+      <div class="feat-row sr">
+        <div class="feat-text">
+          <div class="eyebrow">Pielietojums</div>
+          <h3 id="pielietojums">Risinājums<br><strong>dažādiem uzdevumiem</strong></h3>
+          <p>3D skenēšana ir īpaši noderīga, kad detaļai nav pieejama tehniskā dokumentācija vai kad nepieciešams precīzi digitalizēt esošu priekšmetu.</p>
+          <ul class="feat-list">
+            <li>
+              <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              Rezerves daļas un bojātu detaļu atjaunošana
+            </li>
+            <li>
+              <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              Reverse engineering — modeļa izveide no gatavas detaļas
+            </li>
+            <li>
+              <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              Kvalitātes kontrole un formu salīdzināšana
+            </li>
+            <li>
+              <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              Priekšmetu, mākslas un vēsturisko objektu arhivēšana
+            </li>
+          </ul>
+        </div>
+        <figure class="feat-visual sr sr-d2">
+          <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=1170&auto=format&fit=crop" alt="Reverse engineering — tehniskie rasējumi un detaļu analīze" width="1170" height="780" loading="lazy">
+          <figcaption class="feat-chip">
+            <div class="feat-chip-pulse"></div>
+            <div class="feat-chip-txt">Reverse engineering</div>
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- Feature 4: Synergy with 3D printing -->
+      <div class="feat-row flip sr">
+        <div class="feat-text">
+          <div class="eyebrow">Sinerģija</div>
+          <h3 id="sinerģija">Skenēšana + druka<br><strong>vienā vietā</strong></h3>
+          <p>Apvienojot 3D skenēšanu ar mūsu 3D drukas un modelēšanas pakalpojumiem, iegūstat pilnu ciklu — objekts tiek skenēts, nepieciešamības gadījumā pielāgots un uzreiz izdrukāts.</p>
+          <ul class="feat-list">
+            <li>
+              <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              Skenēšana → modelēšana → 3D druka vienā vietā
+            </li>
+            <li>
+              <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              Bojātu detaļu atjaunošana bez oriģinālajiem rasējumiem
+            </li>
+            <li>
+              <span class="feat-check"><svg viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 3.5L3.5 6L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              Bezmaksas konsultācija pirms darba uzsākšanas
+            </li>
+          </ul>
+        </div>
+        <figure class="feat-visual sr sr-d2">
+          <img src="https://images.pexels.com/photos/23533982/pexels-photo-23533982.jpeg" alt="3D printera ekstrūders — skenēta objekta izdrukāšana" width="600" height="400" loading="lazy">
+          <figcaption class="feat-chip">
+            <div class="feat-chip-pulse"></div>
+            <div class="feat-chip-txt">Pilns cikls</div>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ SECTION -->
+<section class="section faq-section" id="faq" aria-labelledby="faq-heading">
+  <div class="section-max">
+    <div class="sr">
+      <div class="eyebrow">Biežāk uzdotie jautājumi</div>
+      <h2 class="section-title" id="faq-heading">Jautājumi par<br><strong>3D skenēšanu</strong></h2>
+      <p class="section-sub">Īsas atbildes uz biežāk uzdotajiem jautājumiem. Ja neatradāt atbildi — sazinieties ar mums.</p>
+    </div>
+
+    <dl class="faq-list sr sr-d1" aria-label="Biežāk uzdotie jautājumi par 3D skenēšanu">
+      <div class="faq-item">
+        <dt id="faq-s1">Kas ir 3D skenēšana?</dt>
+        <dd aria-labelledby="faq-s1">
+          <p>3D skenēšana ir process, kurā fizisks objekts tiek uzmērīts un pārvērsts digitālā 3D modelī. Iegūto modeli pēc tam var izmantot 3D drukāšanai, tehniskajai modelēšanai, mērījumiem vai arhivēšanai.</p>
+        </dd>
+      </div>
+
+      <div class="faq-item">
+        <dt id="faq-s2">Kādus objektus iespējams skenēt?</dt>
+        <dd aria-labelledby="faq-s2">
+          <p>Var skenēt dažāda izmēra un formas objektus — detaļas, korpusus, priekšmetus un prototipus. Ļoti spīdīgas, caurspīdīgas vai ļoti tumšas virsmas var prasīt papildu sagatavošanu. Objekta piemērotību izvērtēsim pēc apskates.</p>
+        </dd>
+      </div>
+
+      <div class="faq-item">
+        <dt id="faq-s3">Kādā formātā es saņemšu iegūto failu?</dt>
+        <dd aria-labelledby="faq-s3">
+          <p>Atkarībā no tālākās izmantošanas — visbiežāk <strong>STL</strong> (3D drukai), <strong>OBJ</strong> vai <strong>STEP</strong> (CAD programmām). Nepieciešamo formātu saskaņosim pirms darba uzsākšanas.</p>
+        </dd>
+      </div>
+
+      <div class="faq-item">
+        <dt id="faq-s4">Cik precīza ir 3D skenēšana?</dt>
+        <dd aria-labelledby="faq-s4">
+          <p>Precizitāte ir atkarīga no objekta izmēra, virsmas un izmantotās tehnoloģijas. Katram projektam to novērtēsim individuāli un saskaņosim ar jūsu vajadzībām.</p>
+        </dd>
+      </div>
+
+      <div class="faq-item">
+        <dt id="faq-s5">Kā pieteikt skenēšanas pakalpojumu?</dt>
+        <dd aria-labelledby="faq-s5">
+          <p><strong>Soli pa solim:</strong></p>
+          <ol class="faq-steps">
+            <li>Aizpildiet <a href="/kontakts/">pieteikuma formu</a> mūsu kontaktlapā.</li>
+            <li>Pievienojiet objekta fotoattēlus un īsu aprakstu.</li>
+            <li>Mēs atbildēsim 24 stundu laikā ar izvērtējumu un tālākajiem soļiem.</li>
+          </ol>
+          <p>Varat arī zvanīt pa tālruni <a href="tel:+37124424434">+371 24 424 434</a> vai rakstīt uz <a href="mailto:razosana@bratus.lv">razosana@bratus.lv</a>.</p>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<div class="cta-band">
+  <h2 class="sr">Ir objekts, ko<br>nepieciešams <strong>digitalizēt</strong>?</h2>
+  <p class="sr sr-d1">Sazinieties ar mums — novērtēsim objektu un ieteiksim piemērotāko risinājumu.</p>
+  <div class="cta-band-btns sr sr-d2">
+    <a href="/kontakts/" class="btn-cta-primary">
+      Pieteikt skenēšanu
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+      </svg>
+    </a>
+    <a href="/pakalpojumi/" class="btn-cta-ghost">Pārējie pakalpojumi ↗</a>
+  </div>
+</div>
+
+</main>
+
+<!-- FOOTER -->
+<footer role="contentinfo">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <img src="https://cdn.shopify.com/s/files/1/0720/6325/4803/files/BRATUS_BALTS_LOGO_PNG_31ca2710-d923-44ca-ab97-7d4706e0ce6d.png?v=1764954367" alt="Bratus logotips — 3D printēšana, modelēšana un skenēšana" width="200" height="55" loading="lazy">
+      <p>Profesionāla 3D printēšana, modelēšana un skenēšana Latvijā. <strong>500+ izpildīti projekti.</strong></p>
+    </div>
+    <div class="footer-col">
+      <h2>Pakalpojumi</h2>
+      <a href="/pakalpojumi/#printesana">3D Printēšana</a>
+      <a href="/pakalpojumi/#modelesana">3D Modelēšana</a>
+      <a href="/skenesana/">3D Skenēšana</a>
+      <a href="/pakalpojumi/">Prototipēšana</a>
+      <a href="/pakalpojumi/#materiali">Materiāli</a>
+      <a href="https://bratus.lv/collections/3d-filamenti" target="_blank" rel="noopener">3D Filamenti</a>
+    </div>
+    <div class="footer-col">
+      <h2>Kontakti</h2>
+      <a href="tel:+37124424434">+371 24 424 434</a>
+      <a href="tel:+37126325307">+371 26 325 307</a>
+      <a href="mailto:razosana@bratus.lv">razosana@bratus.lv</a>
+      <a href="/faq/">Biežāk uzdotie jautājumi (FAQ)</a>
+    </div>
+    <div class="footer-col">
+      <h2>Juridiskā info</h2>
+      <p>SIA Bratus</p>
+      <p>Reģ. nr. 40203628316</p>
+      <p>PVN reģ. nr. LV40203628316</p>
+      <p>Pliederu iela 22,<br>Ķekava, Ķekavas nov., LV-2123</p>
+      <a href="https://bratus.lv/policies/privacy-policy" target="_blank" rel="noopener">Privātuma politika</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p><time datetime="2026">© <span id="yr"></span></time> SIA <a href="https://bratus.lv" target="_blank" rel="noopener">bratus.lv</a>. Visas tiesības aizsargātas. <a href="https://creativecommons.org/licenses/by-nd/4.0/" target="_blank" rel="noopener">CC BY-ND 4.0</a>. Mājaslapas izstrādi un SEO optimizāciju veica <a href="https://latseo.com" target="_blank" rel="noopener">LatSEO.com</a>.</p>
+    <div class="footer-bottom-right">Šī lapa: <span>3dpakalpojumi.lv</span></div>
+  </div>
+</footer>
+
+<script defer src="/js/main.js"></script>
+</body>
+</html>

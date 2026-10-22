@@ -8,6 +8,7 @@ Mēs esam SIA Bratus — Latvijā bāzēts 3D drukas un modelēšanas serviss ar
 - **3D Printēšana**: FDM druka ar Bambu Lab printeriem. 8+ materiāli (PLA, PETG, ABS, ASA, TPU, Nylon, PC, CF/GF). Līdz 16 krāsām vienā projektā. Cena: no 3€/h (min. 10€, bez PVN).
 - **3D Modelēšana**: Tehniskā modelēšana ar Fusion 360 un OnShape. STL/STEP failu sagatavošana. Cena: 30€/h (bez PVN).
 - **Prototipēšana**: Pilna cikla izstrāde no idejas līdz fiziskam modelim. Cena: pēc pieprasījuma.
+- **3D Skenēšana**: Fizisku objektu digitalizācija 3D modeļos. Reverse engineering, rezerves daļas, arhivēšana. Rezultāts STL/OBJ/STEP formātā. Cena: pēc pieprasījuma.
 
 ## Cenas
 | Pakalpojums | Cena | Piezīmes |
@@ -15,6 +16,7 @@ Mēs esam SIA Bratus — Latvijā bāzēts 3D drukas un modelēšanas serviss ar
 | 3D Printēšana | 3€/h | Min. 10€, bez PVN |
 | 3D Modelēšana | 30€/h | Bez PVN |
 | Prototipēšana | Pēc pieprasījuma | Individuāls aprēķins |
+| 3D Skenēšana | Pēc pieprasījuma | Individuāls aprēķins |
 
 ## Kontakti
 - Tālrunis: +371 24 424 434
@@ -34,6 +36,7 @@ Mēs esam SIA Bratus — Latvijā bāzēts 3D drukas un modelēšanas serviss ar
 ## Saites
 - [Sākums](https://3dpakalpojumi.lv/)
 - [Pakalpojumi](https://3dpakalpojumi.lv/pakalpojumi/)
+- [3D Skenēšana](https://3dpakalpojumi.lv/skenesana/)
 - [Projekti](https://3dpakalpojumi.lv/projekti/)
 - [Cenas](https://3dpakalpojumi.lv/cenas/)
 - [FAQ](https://3dpakalpojumi.lv/faq/)
