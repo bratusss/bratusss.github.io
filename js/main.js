@@ -126,3 +126,36 @@ document.querySelectorAll('a[href^="#"]').forEach(function (a) {
     }
   });
 });
+
+// BUJ: jautājumi atveras un aizveras (akordeons)
+document.querySelectorAll('.faq-list').forEach(function (list, li) {
+  list.classList.add('faq-js');
+  list.querySelectorAll('.faq-item').forEach(function (item, i) {
+    var dt = item.querySelector('dt');
+    var dd = item.querySelector('dd');
+    if (!dt || !dd) return;
+    if (!dd.id) dd.id = 'faq-a-' + li + '-' + i;
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'faq-q';
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('aria-controls', dd.id);
+    while (dt.firstChild) btn.appendChild(dt.firstChild);
+    dt.appendChild(btn);
+
+    function set(open) {
+      item.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      dd.style.maxHeight = open ? dd.scrollHeight + 'px' : '0px';
+    }
+    set(false);
+
+    btn.addEventListener('click', function () {
+      set(!item.classList.contains('open'));
+    });
+    window.addEventListener('resize', function () {
+      if (item.classList.contains('open')) dd.style.maxHeight = dd.scrollHeight + 'px';
+    });
+  });
+});

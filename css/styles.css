@@ -1072,6 +1072,48 @@ ul { list-style: none; }
   text-underline-offset: 2px;
 }
 .faq-item dd a:hover { color: #7a0c9e; }
+/* Akordeons (klase faq-js tiek pievienota ar JS; bez JS atbildes redzamas) */
+.faq-js .faq-item { padding: 0; }
+.faq-js .faq-item dt { display: block; }
+.faq-js .faq-item dt::after { content: none; }
+.faq-q {
+  all: unset;
+  box-sizing: border-box;
+  width: 100%;
+  display: flex; align-items: center; gap: 16px;
+  padding: 26px 0;
+  cursor: pointer;
+  font: inherit; color: inherit; line-height: inherit;
+  text-align: left;
+}
+.faq-q::after {
+  content: '+';
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: var(--accent);
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.25s var(--ease);
+}
+.faq-q:hover { color: var(--accent); }
+.faq-q:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.faq-item.open .faq-q { color: var(--accent); }
+.faq-item.open .faq-q::after { transform: rotate(45deg); }
+.faq-js .faq-item dd {
+  margin-top: 0;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s var(--ease);
+}
+.faq-js .faq-item dd > :last-child { padding-bottom: 26px; }
+.faq-js .faq-item dd > ol.faq-steps:last-child { margin-bottom: 0; }
+@media (max-width: 860px) {
+  .faq-js .faq-item { padding: 0; }
+  .faq-q { padding: 20px 0; }
+  .faq-js .faq-item dd > :last-child { padding-bottom: 20px; }
+}
 @media (max-width: 860px) {
   .faq-list { margin-top: 28px; }
   .faq-item { padding: 20px 0; }
