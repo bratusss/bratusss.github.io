@@ -230,14 +230,14 @@
     <div class="section-max">
       <div class="calc-upload">
         <div class="calc-dropzone" id="calc-dropzone" tabindex="0" role="button" aria-label="Augšupielādēt 3D failu">
-          <input type="file" id="calc-file" accept=".stl,.obj,.3mf" multiple hidden>
+          <input type="file" id="calc-file" accept=".stl,.obj,.3mf,.step,.stp,.iges,.igs,.ply,.amf,.glb,.gltf,.dae" multiple hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="17 8 12 3 7 8"/>
             <line x1="12" y1="3" x2="12" y2="15"/>
           </svg>
           <p class="calc-drop-title">Ievelc šeit 3D failu</p>
-          <p class="calc-drop-sub">vai spied, lai izvēlētos — STL · OBJ · 3MF (vari pievienot arī vairākus)</p>
+          <p class="calc-drop-sub">vai spied, lai izvēlētos — STL · OBJ · 3MF · STEP · IGES · PLY · AMF · GLB · DAE (vari pievienot arī vairākus)</p>
           <div class="calc-material-pick">
             <label class="form-label" for="calc-material">Materiāls</label>
             <select id="calc-material" class="calc-select">
@@ -271,7 +271,7 @@
         <div class="calc-panel-head">
           <h3>Detaļas</h3>
           <button class="calc-add-btn" id="calc-add-part" type="button">+ Pievienot</button>
-          <input type="file" id="calc-file-more" accept=".stl,.obj,.3mf" multiple hidden>
+          <input type="file" id="calc-file-more" accept=".stl,.obj,.3mf,.step,.stp,.iges,.igs,.ply,.amf,.glb,.gltf,.dae" multiple hidden>
         </div>
         <ul class="calc-parts-list" id="calc-parts-list"></ul>
       </aside>

@@ -4,6 +4,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { ThreeMFLoader } from 'three/addons/loaders/3MFLoader.js';
+import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
+import { AMFLoader } from 'three/addons/loaders/AMFLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { ColladaLoader } from 'three/addons/loaders/ColladaLoader.js';
 import { computeBBox, computeVolume, computeSurfaceArea, sliceMesh, macroLayers, estimatePrint } from './slicer.js';
 
 const LAYER_HEIGHT = 0.2;
@@ -250,10 +254,61 @@ async function loadFiles(files) {
   }
 }
 
+// Atbalstītie formāti. STEP/IGES tiek pārvērsti tīklā ar occt-import-js (ielādē tikai pēc vajadzības).
+const SUPPORTED_EXTS = ['stl', 'obj', '3mf', 'step', 'stp', 'iges', 'igs', 'ply', 'amf', 'glb', 'gltf', 'dae'];
+const OCCT_URL = 'https://cdn.jsdelivr.net/npm/occt-import-js@0.0.23/dist/';
+let occtPromise = null;
+
+function loadOcct() {
+  if (!occtPromise) {
+    occtPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = OCCT_URL + 'occt-import-js.js';
+      script.onload = () => {
+        window.occtimportjs({ locateFile: (f) => OCCT_URL + f }).then(resolve, reject);
+      };
+      script.onerror = () => reject(new Error('neizdevās ielādēt STEP/IGES nolasītāju'));
+      document.head.appendChild(script);
+    }).catch((err) => {
+      occtPromise = null;
+      throw err;
+    });
+  }
+  return occtPromise;
+}
+
+// STEP/IGES → THREE.Group (vienības: mm).
+async function parseCad(buf, ext) {
+  const occt = await loadOcct();
+  const bytes = new Uint8Array(buf);
+  const res = (ext === 'step' || ext === 'stp')
+    ? occt.ReadStepFile(bytes, null)
+    : occt.ReadIgesFile(bytes, null);
+  if (!res || !res.success) throw new Error('CAD failu nevar nolasīt');
+  const group = new THREE.Group();
+  res.meshes.forEach((m) => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(m.attributes.position.array, 3));
+    if (m.attributes.normal) g.setAttribute('normal', new THREE.Float32BufferAttribute(m.attributes.normal.array, 3));
+    if (m.index) g.setIndex(m.index.array);
+    group.add(new THREE.Mesh(g));
+  });
+  return group;
+}
+
+// GLB/GLTF un DAE ir metros ar Y uz augšu → pārvērš uz mm ar Z uz augšu (kā STL).
+function fromMetersYUp(object) {
+  const wrap = new THREE.Group();
+  wrap.scale.setScalar(1000);
+  wrap.rotation.x = Math.PI / 2;
+  wrap.add(object);
+  return wrap;
+}
+
 async function addPart(file) {
   const ext = fileExt(file.name);
-  if (['stl', 'obj', '3mf'].indexOf(ext) === -1) {
-    showError('Neatbalstīts formāts: ' + file.name + '. Lūdzu izvēlies STL, OBJ vai 3MF failu.');
+  if (SUPPORTED_EXTS.indexOf(ext) === -1) {
+    showError('Neatbalstīts formāts: ' + file.name + '. Lūdzu izvēlies STL, OBJ, 3MF, STEP, IGES, PLY, AMF, GLB/GLTF vai DAE failu.');
     return;
   }
 
@@ -266,9 +321,26 @@ async function addPart(file) {
     } else if (ext === 'obj') {
       const text = await file.text();
       object = new OBJLoader().parse(text);
-    } else {
+    } else if (ext === '3mf') {
       const buf = await file.arrayBuffer();
       object = new ThreeMFLoader().parse(buf);
+    } else if (ext === 'ply') {
+      const buf = await file.arrayBuffer();
+      object = new THREE.Mesh(new PLYLoader().parse(buf));
+    } else if (ext === 'amf') {
+      const buf = await file.arrayBuffer();
+      object = new AMFLoader().parse(buf);
+    } else if (ext === 'glb' || ext === 'gltf') {
+      const data = ext === 'glb' ? await file.arrayBuffer() : await file.text();
+      const gltf = await new GLTFLoader().parseAsync(data, '');
+      object = fromMetersYUp(gltf.scene);
+    } else if (ext === 'dae') {
+      const text = await file.text();
+      object = fromMetersYUp(new ColladaLoader().parse(text, '').scene);
+    } else {
+      setStatus('Apstrādā CAD failu ' + file.name + '…');
+      const buf = await file.arrayBuffer();
+      object = await parseCad(buf, ext);
     }
   } catch (err) {
     showError('Neizdevās nolasīt failu: ' + err.message);
