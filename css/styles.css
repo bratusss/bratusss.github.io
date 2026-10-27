@@ -1507,6 +1507,8 @@ footer {
 }
 .calc-sum-row:last-child { border-bottom: none; }
 .calc-sum-row strong { color: var(--ink); font-weight: 600; white-space: nowrap; }
+.calc-sum-source strong { font-weight: 500; font-size: 0.82rem; color: var(--ink2); }
+.calc-sum-source.is-orca strong { color: var(--accent); }
 
 .calc-price-bar {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;

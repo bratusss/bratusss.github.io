@@ -15,6 +15,9 @@ const MAX_TRIANGLES_FOR_SLICE = 350000; // virs šī — makro aprēķins
 const PRINTER_ID = 'p1s';   // printeris nav izvēlējams
 const HOURLY_RATE = 3;      // €/h
 const PROCESSING_FEE = 10;  // € — faila apstrāde
+// OrcaSlicer serviss uz ThinkPad (P1S · 0.20mm Standard · PLA Basic · atbalsti).
+const SLICER_URL = 'https://noliktavas-thinkpad.tailbfb842.ts.net/slicer/slice';
+const SLICER_MAX_BYTES = 50 * 1024 * 1024;
 
 // Nebula Premium PLA krāsu palete (presets).
 const PALETTE = [
@@ -372,6 +375,8 @@ async function addPart(file) {
     object = wrap;
 
     const result = analyze(object, file.name);
+    const tris = result.tris;
+    delete result.tris;
     const color = DEFAULT_COLOR;
     const material = createPartMaterial(color);
     object.traverse((o) => {
@@ -392,6 +397,7 @@ async function addPart(file) {
       autoUnit: unit !== 'mm'
     };
     parts.push(part);
+    requestSlice(part, tris);
     renderPartsList();
     setActivePart(part.id);
     setStatus(null);
@@ -436,8 +442,75 @@ function analyze(object, fileName) {
 
   return {
     fileName, triangleCount, bbox, sizeX, sizeY, sizeZ,
-    volumeMm3, surfaceMm2, layers, precise
+    volumeMm3, surfaceMm2, layers, precise, tris
   };
+}
+
+// ---------- OrcaSlicer ----------
+// Vispirms rāda aptuveno aprēķinu, tad, kad serveris atbild, nomaina laiku un svaru.
+// Ja serveris nav pieejams vai kļūdās, paliek aptuvenais aprēķins.
+let sliceChain = Promise.resolve();
+
+function trisToStl(tris) {
+  const n = tris.length / 9;
+  const buf = new ArrayBuffer(84 + 50 * n);
+  const view = new DataView(buf);
+  view.setUint32(80, n, true);
+  let o = 84;
+  for (let i = 0; i < tris.length; i += 9) {
+    o += 12; // normāle — OrcaSlicer to pārrēķina
+    for (let k = 0; k < 9; k++) {
+      view.setFloat32(o, tris[i + k], true);
+      o += 4;
+    }
+    o += 2;
+  }
+  return buf;
+}
+
+function requestSlice(part, tris) {
+  const token = (part.sliceToken || 0) + 1;
+  part.sliceToken = token;
+  const size = 84 + 50 * (tris.length / 9);
+  if (size > SLICER_MAX_BYTES) {
+    part.orca = { status: 'failed' };
+    return;
+  }
+  const body = trisToStl(tris);
+  part.orca = { status: 'pending' };
+  // Pa vienai detaļai, lai neaizpildītu servera rindu.
+  sliceChain = sliceChain.then(() => sliceOnServer(part, token, body));
+}
+
+async function sliceOnServer(part, token, body) {
+  if (part.sliceToken !== token || parts.indexOf(part) === -1) return;
+  let orca = { status: 'failed' };
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const res = await fetch(SLICER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/octet-stream' },
+        body: body
+      });
+      if (res.status === 503 || res.status === 429) {
+        await new Promise((r) => setTimeout(r, 5000 * (attempt + 1)));
+        continue;
+      }
+      const data = await res.json();
+      if (res.ok && data.totalSeconds > 0 && data.volumeCm3 > 0) {
+        orca = { status: 'done', timeSeconds: data.totalSeconds, volumeCm3: data.volumeCm3 };
+      }
+    } catch (err) {
+      // Tīkla kļūda — paliek aptuvenais aprēķins.
+    }
+    break;
+  }
+  if (part.sliceToken !== token) return;
+  part.orca = orca;
+  if (parts.indexOf(part) !== -1) {
+    renderPartsList();
+    renderPrice();
+  }
 }
 
 // ---------- Aktīvā detaļa ----------
@@ -547,17 +620,28 @@ function updateUploadStatus() {
 // ---------- Cena ----------
 function estimatePart(part) {
   const mat = MATERIALS[materialKey] || MATERIALS.pla;
-  const print = estimatePrint(part.result.layers, PRINTER_ID);
-  const weightG = print.extrudedVolumeMm3 * mat.density * 0.001;
+  const orca = part.orca && part.orca.status === 'done' ? part.orca : null;
+  let timeSeconds, weightG;
+  if (orca) {
+    // OrcaSlicer griež ar PLA; svaru citiem materiāliem rēķina pēc blīvuma.
+    timeSeconds = orca.timeSeconds;
+    weightG = orca.volumeCm3 * mat.density;
+  } else {
+    const print = estimatePrint(part.result.layers, PRINTER_ID);
+    timeSeconds = print.timeSeconds;
+    weightG = print.extrudedVolumeMm3 * mat.density * 0.001;
+  }
+  const hours = timeSeconds / 3600;
   const weightKg = weightG / 1000;
-  const timeCost = print.hours * HOURLY_RATE;
+  const timeCost = hours * HOURLY_RATE;
   const materialCost = weightKg * mat.price;
   const processingCost = PROCESSING_FEE;
   return {
     total: timeCost + materialCost + processingCost,
     timeCost, materialCost, processingCost,
-    weightG, hours: print.hours, timeSeconds: print.timeSeconds,
-    layerCount: print.layerCount, label: mat.label
+    weightG, hours, timeSeconds,
+    source: orca ? 'orca' : (part.orca && part.orca.status === 'pending' ? 'pending' : 'estimate'),
+    label: mat.label
   };
 }
 
@@ -566,6 +650,12 @@ function formatTime(seconds) {
   const m = Math.floor((seconds % 3600) / 60);
   return (h > 0 ? h + ' h ' : '') + m + ' min';
 }
+
+const SOURCE_LABELS = {
+  orca: 'OrcaSlicer · P1S ar atbalstiem',
+  pending: 'Aptuvens · precizē…',
+  estimate: 'Aptuvens'
+};
 
 function renderPrice() {
   let total = 0;
@@ -582,6 +672,7 @@ function renderPrice() {
     '<div class="calc-sum-row"><span>Drukas laiks</span><strong>' + formatTime(e.timeSeconds) + '</strong></div>' +
     '<div class="calc-sum-row"><span>Svars</span><strong>' + e.weightG.toFixed(1) + ' g</strong></div>' +
     '<div class="calc-sum-row"><span>Materiāls</span><strong>' + e.label + '</strong></div>' +
+    '<div class="calc-sum-row calc-sum-source is-' + e.source + '"><span>Aprēķins</span><strong>' + SOURCE_LABELS[e.source] + '</strong></div>' +
     '<div class="calc-sum-row"><span>Detaļas cena</span><strong>' + e.total.toFixed(2) + ' €</strong></div>' +
     '<div class="calc-sum-row"><span>× ' + part.quantity + '</span><strong>' + (e.total * part.quantity).toFixed(2) + ' €</strong></div>';
 }
@@ -803,6 +894,8 @@ function buildOrderText() {
     lines.push('   Krāsa: ' + colorName(p.color));
     lines.push('   Materiāls: ' + e.label);
     lines.push('   Daudzums: ' + p.quantity);
+    lines.push('   Drukas laiks: ' + formatTime(e.timeSeconds) + ', svars: ' + e.weightG.toFixed(1) + ' g');
+    lines.push('   Aprēķins: ' + SOURCE_LABELS[e.source]);
     lines.push('   Cena: ' + (e.total * p.quantity).toFixed(2) + ' €');
     lines.push('');
   });
@@ -983,6 +1076,8 @@ unitSel.addEventListener('change', async () => {
   await new Promise((r) => setTimeout(r, 30));
   try {
     part.result = analyze(part.object, part.fileName);
+    requestSlice(part, part.result.tris);
+    delete part.result.tris;
   } catch (err) {
     showError('Aprēķina kļūda: ' + err.message);
     return;
