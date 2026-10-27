@@ -486,24 +486,39 @@ async function sliceOnServer(part, token, body) {
   if (part.sliceToken !== token || parts.indexOf(part) === -1) return;
   let orca = { status: 'failed' };
   for (let attempt = 0; attempt < 3; attempt++) {
+    // Neviens pieprasījums negaida ilgāk par 4 min.
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 240000);
+    let retry = false;
     try {
       const res = await fetch(SLICER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/octet-stream' },
-        body: body
+        body: body,
+        signal: ctrl.signal,
+        credentials: 'omit',
+        referrerPolicy: 'no-referrer'
       });
       if (res.status === 503 || res.status === 429) {
-        await new Promise((r) => setTimeout(r, 5000 * (attempt + 1)));
-        continue;
-      }
-      const data = await res.json();
-      if (res.ok && data.totalSeconds > 0 && data.volumeCm3 > 0) {
-        orca = { status: 'done', timeSeconds: data.totalSeconds, volumeCm3: data.volumeCm3 };
+        retry = true;
+      } else if (res.ok) {
+        const data = await res.json();
+        // Pieņem tikai saprātīgus skaitļus (līdz 30 dienām un 20 l).
+        const t = Number(data.totalSeconds);
+        const v = Number(data.volumeCm3);
+        if (Number.isFinite(t) && Number.isFinite(v) && t > 0 && t < 2592000 && v > 0 && v < 20000) {
+          orca = { status: 'done', timeSeconds: t, volumeCm3: v };
+        }
       }
     } catch (err) {
-      // Tīkla kļūda — paliek aptuvenais aprēķins.
+      // Tīkla kļūda vai pārtraukts savienojums — mēģina vēlreiz, citādi paliek aptuvenais aprēķins.
+      retry = err.name !== 'AbortError';
+    } finally {
+      clearTimeout(timer);
     }
-    break;
+    if (!retry || attempt === 2) break;
+    await new Promise((r) => setTimeout(r, 5000 * (attempt + 1)));
+    if (part.sliceToken !== token || parts.indexOf(part) === -1) return;
   }
   if (part.sliceToken !== token) return;
   part.orca = orca;
