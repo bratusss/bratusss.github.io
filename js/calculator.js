@@ -94,6 +94,8 @@ const materialSelWs = document.getElementById('calc-material-ws');
 const qtyEl = document.getElementById('calc-qty');
 const qtyMinus = document.getElementById('calc-qty-minus');
 const qtyPlus = document.getElementById('calc-qty-plus');
+const unitSel = document.getElementById('calc-unit');
+const unitNote = document.getElementById('calc-unit-note');
 const colorSwatchesEl = document.getElementById('calc-color-swatches');
 const colorLabelEl = document.getElementById('calc-color-label');
 const partSummaryEl = document.getElementById('calc-part-summary');
@@ -114,7 +116,7 @@ const orderMessage = document.getElementById('calc-order-message');
 if ([
   uploadScreen, workspaceScreen, dropzone, fileInput, fileInputMore, uploadStatus,
   seePriceBtn, backBtn, addPartBtn, partsListEl, viewerEl, hintEl,
-  materialSel, materialSelWs, qtyEl, qtyMinus, qtyPlus, colorSwatchesEl, colorLabelEl,
+  materialSel, materialSelWs, qtyEl, qtyMinus, qtyPlus, unitSel, unitNote, colorSwatchesEl, colorLabelEl,
   partSummaryEl, totalEl, orderBtn, orderModal, orderClose, orderForm, orderSummaryEl,
   orderStatusEl, orderSubmit, orderName, orderEmail, orderPhone, orderLink, orderMessage
 ].some((el) => !el)) {
@@ -305,6 +307,16 @@ function fromMetersYUp(object) {
   return wrap;
 }
 
+// Faila mērvienība → mm. STL/OBJ u.c. failos mērvienība nav ierakstīta, pieņem mm.
+const UNIT_SCALE = { mm: 1, cm: 10, m: 1000, in: 25.4 };
+
+// Ja modelis ir mazāks par 1 mm, tas gandrīz noteikti eksportēts metros.
+function detectUnit(object) {
+  const size = new THREE.Box3().setFromObject(object).getSize(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z);
+  return maxDim > 0 && maxDim < 1 ? 'm' : 'mm';
+}
+
 async function addPart(file) {
   const ext = fileExt(file.name);
   if (SUPPORTED_EXTS.indexOf(ext) === -1) {
@@ -352,6 +364,13 @@ async function addPart(file) {
   await new Promise((r) => setTimeout(r, 30));
 
   try {
+    // Ietin grupā, lai mērvienību varētu mainīt ar mērogu.
+    const unit = detectUnit(object);
+    const wrap = new THREE.Group();
+    wrap.add(object);
+    wrap.scale.setScalar(UNIT_SCALE[unit]);
+    object = wrap;
+
     const result = analyze(object, file.name);
     const color = DEFAULT_COLOR;
     const material = createPartMaterial(color);
@@ -368,7 +387,9 @@ async function addPart(file) {
       material: material,
       result: result,
       color: color,
-      quantity: 1
+      quantity: 1,
+      unit: unit,
+      autoUnit: unit !== 'mm'
     };
     parts.push(part);
     renderPartsList();
@@ -508,6 +529,8 @@ function disposePart(part) {
 
 function updateControls(part) {
   qtyEl.value = part.quantity;
+  unitSel.value = part.unit;
+  unitNote.hidden = !part.autoUnit;
   updateColorSelection(part.color);
 }
 
@@ -946,6 +969,29 @@ materialSelWs.addEventListener('change', () => {
 qtyMinus.addEventListener('click', () => setQuantity((getActive() ? getActive().quantity : 1) - 1));
 qtyPlus.addEventListener('click', () => setQuantity((getActive() ? getActive().quantity : 1) + 1));
 qtyEl.addEventListener('change', () => setQuantity(parseInt(qtyEl.value, 10) || 1));
+
+unitSel.addEventListener('change', async () => {
+  const part = getActive();
+  if (!part || !UNIT_SCALE[unitSel.value]) return;
+  part.unit = unitSel.value;
+  part.autoUnit = false;
+  unitNote.hidden = true;
+  // Atvieno no skatītāja grupas, citādi analyze ņemtu vērā tās mērogu.
+  part.object.removeFromParent();
+  part.object.scale.setScalar(UNIT_SCALE[part.unit]);
+  setStatus('Aprēķina…');
+  await new Promise((r) => setTimeout(r, 30));
+  try {
+    part.result = analyze(part.object, part.fileName);
+  } catch (err) {
+    showError('Aprēķina kļūda: ' + err.message);
+    return;
+  }
+  setStatus(null);
+  renderPartsList();
+  showModel(part);
+  renderPrice();
+});
 
 function setQuantity(value) {
   const part = getActive();

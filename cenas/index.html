@@ -292,6 +292,16 @@
           </div>
         </div>
         <div class="calc-control-group">
+          <label class="form-label" for="calc-unit">Faila mērvienības</label>
+          <select id="calc-unit" class="calc-select">
+            <option value="mm" selected>Milimetri (mm)</option>
+            <option value="cm">Centimetri (cm)</option>
+            <option value="m">Metri (m)</option>
+            <option value="in">Collas (in)</option>
+          </select>
+          <span class="calc-unit-note" id="calc-unit-note" hidden>Modelis bija mazāks par 1 mm — pieņemts, ka fails ir metros.</span>
+        </div>
+        <div class="calc-control-group">
           <label class="form-label">Krāsa</label>
           <div class="calc-color-swatches" id="calc-color-swatches"></div>
           <span class="calc-color-label" id="calc-color-label"></span>
